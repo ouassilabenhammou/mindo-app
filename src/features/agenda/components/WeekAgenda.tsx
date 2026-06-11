@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { Text, View } from "react-native";
 import { WeeklyCalendar } from "react-native-simple-weekly-calendar";
 
 export default function WeekAgenda() {
   const vandaag = new Date().toISOString().split("T")[0];
-
+  const [selectedDate, setSelectedDate] = useState(vandaag);
   return (
     <View>
       <Text>Week Agenda</Text>
@@ -15,14 +16,14 @@ export default function WeekAgenda() {
         nextComponent={() => <View style={{ width: 40, height: 40 }} />}
         prevComponent={() => <View style={{ width: 40, height: 40 }} />}
         onDayPress={(date) => {
-          console.log(date);
+          setSelectedDate(date);
         }}
         dayComponent={({ date }) => {
-          const isVandaag = date === vandaag;
+          const isSelected = date === selectedDate;
           return (
             <View
               style={{
-                backgroundColor: isVandaag ? "lightgrey" : "transparent",
+                backgroundColor: isSelected ? "grey" : "transparent",
                 width: 40,
                 height: 40,
                 borderRadius: 20,
