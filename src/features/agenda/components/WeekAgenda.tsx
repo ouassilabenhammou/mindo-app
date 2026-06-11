@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, useWindowDimensions } from "react-native";
 import { WeeklyCalendar } from "react-native-simple-weekly-calendar";
 
 import dayjs from "dayjs";
@@ -9,52 +9,103 @@ dayjs.locale("nl");
 
 export default function WeekAgenda() {
   const vandaag = new Date().toISOString().split("T")[0];
-  const [selectedDate, setSelectedDate] = useState(vandaag);
+  const [selectedWeekday, setSelectedWeekday] = useState(dayjs(vandaag).day());
+
+  const { width } = useWindowDimensions();
+  const dayWidth = (width - 40) / 7;
 
   return (
     <View>
       <WeeklyCalendar
-        // Omzetten van dag naar Nederlands
-
-        dayHeaderComponent={({ dayOfWeek, theme }) => {
-          const dag = dayOfWeek.replace(".", "");
-
-          return (
-            <Text style={{ color: theme.dayHeaderTextColor }}>
-              {dag.charAt(0).toUpperCase() + dag.slice(1)}
-            </Text>
-          );
-        }}
+        dayHeaderComponent={() => null}
         monthComponent={({ weekFirstDate, theme }) => {
+          const selectedDateInCurrentWeek = dayjs(weekFirstDate)
+            .day(selectedWeekday)
+            .format("YYYY-MM-DD");
+          const dagNaam = dayjs(selectedDateInCurrentWeek).format("dddd");
+          const dagNaamLabel =
+            dagNaam.charAt(0).toUpperCase() + dagNaam.slice(1);
           const maand = new Intl.DateTimeFormat("nl-NL", {
             month: "short",
             year: "numeric",
           }).format(new Date(weekFirstDate));
-          return <Text style={{ color: theme.monthTextColor }}>{maand}</Text>;
+
+          const maandLabel = maand.toUpperCase();
+
+          return (
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+                width: "100%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: "600",
+                  color: theme.monthTextColor,
+                }}
+              >
+                {dagNaamLabel}
+              </Text>
+              <Text
+                style={{
+                  color: theme.monthTextColor,
+                  fontSize: 14,
+                }}
+              >
+                {maandLabel}
+              </Text>
+            </View>
+          );
         }}
         // Style aanpassen van kalender
         theme={{ calendarBackgroundColor: "transparent" }}
         initialDate={vandaag}
         markedDays={[{ date: vandaag }]}
-        nextComponent={() => <View style={{ width: 40, height: 40 }} />}
-        prevComponent={() => <View style={{ width: 40, height: 40 }} />}
+        nextComponent={() => <View />}
+        prevComponent={() => <View />}
         onDayPress={(date) => {
-          setSelectedDate(date);
+          setSelectedWeekday(dayjs(date).day());
         }}
+        // Dag component
         dayComponent={({ date }) => {
-          const isSelected = date === selectedDate;
+          const isSelected = dayjs(date).day() === selectedWeekday;
+          const dag = dayjs(date).format("ddd").replace(".", "");
+          const dagLabel = dag.charAt(0).toUpperCase() + dag.slice(1);
+
           return (
             <View
               style={{
-                backgroundColor: isSelected ? "grey" : "transparent",
-                width: 40,
-                height: 40,
-                borderRadius: 20,
+                width: dayWidth - 8,
                 alignItems: "center",
-                justifyContent: "center",
               }}
             >
-              <Text>{new Date(date).getDate()}</Text>
+              <View
+                style={{
+                  backgroundColor: isSelected ? "lightgrey" : "transparent",
+                  width: 65,
+                  height: 65,
+                  borderRadius: 12,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <View
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                  }}
+                >
+                  <Text style={{ fontSize: 14 }}>{dagLabel}</Text>
+                  <Text style={{ fontSize: 22 }}>
+                    {dayjs(date).format("D")}
+                  </Text>
+                </View>
+              </View>
             </View>
           );
         }}
