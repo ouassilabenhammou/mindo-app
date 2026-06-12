@@ -4,11 +4,13 @@ import { WeeklyCalendar } from "react-native-simple-weekly-calendar";
 
 import dayjs from "dayjs";
 import "dayjs/locale/nl";
+import isoWeek from "dayjs/plugin/isoWeek";
 
 import { fetchCanvasDeadlines } from "@/app/services/Canvas";
 import type { Deadline } from "@/app/types/canvas";
 
 dayjs.locale("nl");
+dayjs.extend(isoWeek);
 
 function hoortDeadlineBijDatum(deadline: Deadline, date: string) {
   if (!deadline.due_at) return false;
@@ -18,9 +20,9 @@ function hoortDeadlineBijDatum(deadline: Deadline, date: string) {
 
   const isVandaag = geselecteerdeDag.isSame(dayjs(), "day");
   const opDezeDag = deadlineDag.isSame(geselecteerdeDag, "day");
-  const isVerlopenEnNietIngeleverd = deadline.overdue && !deadline.submitted;
+  const isVerlopen = deadline.overdue && !deadline.submitted;
 
-  if (isVandaag && isVerlopenEnNietIngeleverd) {
+  if (isVandaag && isVerlopen) {
     return true;
   }
 
@@ -28,17 +30,23 @@ function hoortDeadlineBijDatum(deadline: Deadline, date: string) {
 }
 
 export default function WeekAgenda() {
-  const vandaag = new Date().toISOString().split("T")[0];
+  const vandaag = dayjs().format("YYYY-MM-DD");
 
-  const [selectedWeekday, setSelectedWeekday] = useState(dayjs(vandaag).day());
-  const [visibleWeekFirstDate, setVisibleWeekFirstDate] = useState(vandaag);
+  const [selectedWeekday, setSelectedWeekday] = useState(
+    dayjs(vandaag).isoWeekday(),
+  );
+
+  const [visibleWeekFirstDate, setVisibleWeekFirstDate] = useState(
+    dayjs(vandaag).startOf("isoWeek").format("YYYY-MM-DD"),
+  );
+
   const [deadlines, setDeadlines] = useState<Deadline[]>([]);
 
   const { width } = useWindowDimensions();
   const dayWidth = (width - 40) / 7;
 
   const activeDate = dayjs(visibleWeekFirstDate)
-    .day(selectedWeekday)
+    .isoWeekday(selectedWeekday)
     .format("YYYY-MM-DD");
 
   useEffect(() => {
@@ -60,13 +68,17 @@ export default function WeekAgenda() {
       <WeeklyCalendar
         dayHeaderComponent={() => null}
         monthComponent={({ weekFirstDate, theme }) => {
-          const selectedDateInCurrentWeek = dayjs(weekFirstDate)
-            .day(selectedWeekday)
+          const zichtbareWeekStart = dayjs(weekFirstDate)
+            .startOf("isoWeek")
             .format("YYYY-MM-DD");
 
-          if (visibleWeekFirstDate !== weekFirstDate) {
+          const selectedDateInCurrentWeek = dayjs(zichtbareWeekStart)
+            .isoWeekday(selectedWeekday)
+            .format("YYYY-MM-DD");
+
+          if (visibleWeekFirstDate !== zichtbareWeekStart) {
             setTimeout(() => {
-              setVisibleWeekFirstDate(weekFirstDate);
+              setVisibleWeekFirstDate(zichtbareWeekStart);
             }, 0);
           }
 
@@ -77,7 +89,7 @@ export default function WeekAgenda() {
           const maand = new Intl.DateTimeFormat("nl-NL", {
             month: "short",
             year: "numeric",
-          }).format(new Date(weekFirstDate));
+          }).format(new Date(selectedDateInCurrentWeek));
 
           return (
             <View
@@ -110,15 +122,17 @@ export default function WeekAgenda() {
         nextComponent={() => <View />}
         prevComponent={() => <View />}
         onDayPress={(date) => {
-          setSelectedWeekday(dayjs(date).day());
+          setSelectedWeekday(dayjs(date).isoWeekday());
           setVisibleWeekFirstDate(
-            dayjs(date).startOf("week").add(1, "day").format("YYYY-MM-DD"),
+            dayjs(date).startOf("isoWeek").format("YYYY-MM-DD"),
           );
         }}
         dayComponent={({ date }) => {
           const isSelected = dayjs(date).isSame(dayjs(activeDate), "day");
+
           const dag = dayjs(date).format("ddd").replace(".", "");
           const dagLabel = dag.charAt(0).toUpperCase() + dag.slice(1);
+
           const isVandaag = dayjs(date).isSame(dayjs(), "day");
 
           const deadlinesVoorDezeDag = deadlines.filter((deadline) =>
@@ -179,15 +193,14 @@ export default function WeekAgenda() {
         }}
       />
 
-      <View style={{ marginTop: 16 }}>
+      <View>
         {deadlinesVoorGeselecteerdeDag.length === 0 ? (
           <Text style={{ color: "grey" }}>
             Geen Canvas-deadlines voor deze dag.
           </Text>
         ) : (
           deadlinesVoorGeselecteerdeDag.map((deadline) => {
-            const isVerlopenEnNietIngeleverd =
-              deadline.overdue && !deadline.submitted;
+            const isVerlopen = deadline.overdue && !deadline.submitted;
 
             return (
               <View
@@ -196,26 +209,9 @@ export default function WeekAgenda() {
                   marginBottom: 12,
                   padding: 12,
                   borderRadius: 12,
-                  backgroundColor: "#F2F2F2",
-                  borderWidth: isVerlopenEnNietIngeleverd ? 1 : 0,
-                  borderColor: isVerlopenEnNietIngeleverd
-                    ? "red"
-                    : "transparent",
+                  backgroundColor: "lightgrey",
                 }}
               >
-                {isVerlopenEnNietIngeleverd && (
-                  <Text
-                    style={{
-                      color: "red",
-                      fontSize: 12,
-                      fontWeight: "600",
-                      marginBottom: 4,
-                    }}
-                  >
-                    Verlopen
-                  </Text>
-                )}
-
                 <Text style={{ fontWeight: "600", fontSize: 16 }}>
                   {deadline.title}
                 </Text>
