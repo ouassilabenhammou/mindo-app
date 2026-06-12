@@ -76,6 +76,8 @@ export default function WeekAgenda() {
           const dag = dayjs(date).format("ddd").replace(".", "");
           const dagLabel = dag.charAt(0).toUpperCase() + dag.slice(1);
 
+          const isVandaag = dayjs(date).isSame(dayjs(), "day");
+
           return (
             <View
               style={{
@@ -100,8 +102,20 @@ export default function WeekAgenda() {
                     gap: 4,
                   }}
                 >
-                  <Text style={{ fontSize: 14 }}>{dagLabel}</Text>
-                  <Text style={{ fontSize: 22 }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: isSelected ? "black" : isVandaag ? "blue" : "grey",
+                    }}
+                  >
+                    {dagLabel}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 22,
+                      color: isSelected ? "black" : isVandaag ? "blue" : "grey",
+                    }}
+                  >
                     {dayjs(date).format("D")}
                   </Text>
                 </View>
