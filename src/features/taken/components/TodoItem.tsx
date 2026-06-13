@@ -1,32 +1,36 @@
-// src/features/taken/TodoItem.tsx
 import Checkbox from "expo-checkbox";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import type { Taken } from "@/app/types/taken";
+import type { Taak } from "@/app/types/taken";
 
 type TodoItemProps = {
-  task: Taken;
-  deleteTask: (id: number) => void;
-  toggleCompleted: (id: number) => void;
+  taak: Taak;
+  onToggleVoltooid: (id: number) => void;
+  onVerwijder: (id: number) => void;
 };
 
 export default function TodoItem({
-  task,
-  deleteTask,
-  toggleCompleted,
+  taak,
+  onToggleVoltooid,
+  onVerwijder,
 }: TodoItemProps) {
   return (
     <View style={styles.item}>
       <Checkbox
-        value={task.completed}
-        onValueChange={() => toggleCompleted(task.id)}
+        value={taak.completed}
+        onValueChange={() => onToggleVoltooid(taak.id)}
       />
 
-      <Text style={[styles.text, task.completed && styles.completed]}>
-        {task.text}
-      </Text>
+      <View style={styles.content}>
+        <Text style={[styles.text, taak.completed && styles.completed]}>
+          {taak.text}
+        </Text>
+        {taak.duur !== null && (
+          <Text style={styles.duur}>{taak.duur} min</Text>
+        )}
+      </View>
 
-      <Pressable onPress={() => deleteTask(task.id)}>
+      <Pressable onPress={() => onVerwijder(taak.id)} hitSlop={8}>
         <Text style={styles.delete}>X</Text>
       </Pressable>
     </View>
@@ -43,8 +47,16 @@ const styles = StyleSheet.create({
     borderColor: "#EEE",
     borderRadius: 12,
   },
-  text: {
+  content: {
     flex: 1,
+    gap: 2,
+  },
+  text: {
+    fontSize: 16,
+  },
+  duur: {
+    fontSize: 13,
+    color: "#888",
   },
   completed: {
     textDecorationLine: "line-through",
