@@ -1,86 +1,56 @@
-// src/features/taken/TodoList.tsx
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
-import type { Taken } from "@/app/types/taken";
-import TodoItem from "@/features/taken/components/TodoItem";
+import type { SectieId, SectieOpenState, Taak } from "@/app/types/taken";
+import { SECTIE_VOLGORDE } from "@/features/taken/constants/taken";
+import SectieLijst from "@/features/taken/components/SectieLijst";
 
-export default function TodoList() {
-  const [tasks, setTasks] = useState<Taken[]>([]);
+type TodoLijstProps = {
+  openSecties: SectieOpenState;
+  takenPerSectie: Record<SectieId, Taak[]>;
+  onToggleSectie: (sectieId: SectieId) => void;
+  onToggleTaakVoltooid: (id: number) => void;
+  onVerwijderTaak: (id: number) => void;
+};
 
-  const [text, setText] = useState("");
-
-  function addTask() {
-    if (!text.trim()) return;
-
-    const newTask: Taken = {
-      id: Date.now(),
-      text: text.trim(),
-      completed: false,
-    };
-
-    setTasks([...tasks, newTask]);
-    setText("");
-  }
-
-  function deleteTask(id: number) {
-    setTasks(tasks.filter((task) => task.id !== id));
-  }
-
-  function toggleCompleted(id: number) {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task,
-      ),
-    );
-  }
-
+export default function TodoLijst({
+  openSecties,
+  takenPerSectie,
+  onToggleSectie,
+  onToggleTaakVoltooid,
+  onVerwijderTaak,
+}: TodoLijstProps) {
   return (
     <View style={styles.container}>
-      {tasks.map((task) => (
-        <TodoItem
-          key={task.id}
-          task={task}
-          deleteTask={deleteTask}
-          toggleCompleted={toggleCompleted}
-        />
-      ))}
-
-      <TextInput
-        style={styles.input}
-        value={text}
-        onChangeText={setText}
-        placeholder="Nieuwe taak"
-        onSubmitEditing={addTask}
-        returnKeyType="done"
-      />
-
-      <Pressable style={styles.button} onPress={addTask}>
-        <Text style={styles.buttonText}>Toevoegen</Text>
-      </Pressable>
+      <ScrollView
+        style={styles.secties}
+        contentContainerStyle={styles.sectiesContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {SECTIE_VOLGORDE.map((sectieId) => (
+          <SectieLijst
+            key={sectieId}
+            sectieId={sectieId}
+            taken={takenPerSectie[sectieId]}
+            isOpen={openSecties[sectieId]}
+            onToggle={() => onToggleSectie(sectieId)}
+            onToggleVoltooid={onToggleTaakVoltooid}
+            onVerwijder={onVerwijderTaak}
+          />
+        ))}
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    gap: 12,
+    flex: 1,
+    paddingHorizontal: 16,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 12,
-    padding: 12,
+  secties: {
+    flex: 1,
   },
-  button: {
-    backgroundColor: "#4A6FD6",
-    padding: 14,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#FFF",
-    fontWeight: "600",
+  sectiesContent: {
+    paddingBottom: 24,
   },
 });
