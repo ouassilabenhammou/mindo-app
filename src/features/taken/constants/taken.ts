@@ -38,4 +38,15 @@ export const PRIORITEIT_LABELS: Record<Prioriteit, string> = {
 
 export const PRIORITEITEN: Prioriteit[] = ["hoog", "gemiddeld", "laag"];
 
-export const DUUR_OPTIES: number[] = Array.from({ length: 12 }, (_, i) => (i + 1) * 5);
+const STANDAARD_DUUR = 5;
+
+export const DUUR_OPTIES = [
+  { value: STANDAARD_DUUR, label: `${STANDAARD_DUUR} min` },
+  { value: 10, label: "10 min" },
+  { value: 15, label: "15 min" },
+  { value: 30, label: "30 min" },
+  { value: 45, label: "45 min" },
+  { value: 60, label: "1 uur" },
+  { value: 90, label: "1,5 uur" },
+  { value: 120, label: "2 uur" },
+];
