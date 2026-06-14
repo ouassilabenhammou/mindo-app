@@ -5,6 +5,12 @@ export function useFocusTimer(totalSeconds: number) {
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
+    if (!isRunning) {
+      setRemaining(totalSeconds);
+    }
+  }, [totalSeconds, isRunning]);
+
+  useEffect(() => {
     if (!isRunning || remaining <= 0) return;
 
     const interval = setInterval(() => {

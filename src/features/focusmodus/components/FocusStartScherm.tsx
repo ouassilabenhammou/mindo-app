@@ -1,32 +1,34 @@
 import { StatusBar } from "expo-status-bar";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-
-import CircularTimer from "./CircularTimer";
+import CircularMinutePicker from "./CircularMinutePicker";
 
 type Props = {
-  remainingSeconds: number;
-  progress: number;
+  minuten: number;
+  onMinutenChange: (minuten: number) => void;
   onStart: () => void;
 };
 
 export default function FocusStartScherm({
-  remainingSeconds,
-  progress,
+  minuten,
+  onMinutenChange,
   onStart,
 }: Props) {
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
-      <Text style={styles.titel}>Focus Modus</Text>
-      <Text style={styles.ondertitel}>
-        25 minuten ongestoorde focus. Druk op start om te beginnen.
-      </Text>
-
+      <Text style={styles.titel}>Focus</Text>
       <View style={styles.timerWrapper}>
-        <CircularTimer remainingSeconds={remainingSeconds} progress={progress} />
+        <CircularMinutePicker
+          minuten={minuten}
+          onMinutenChange={onMinutenChange}
+        />
       </View>
 
-      <Pressable style={styles.startKnop} onPress={onStart}>
+      <Pressable
+        style={[styles.startKnop, minuten === 0 && styles.startKnopDisabled]}
+        onPress={onStart}
+        disabled={minuten === 0}
+      >
         <Text style={styles.startTekst}>Start</Text>
       </Pressable>
     </View>
@@ -37,7 +39,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 16,
   },
   titel: {
     fontSize: 28,
@@ -61,6 +62,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: "center",
     marginBottom: 32,
+  },
+  startKnopDisabled: {
+    opacity: 0.4,
   },
   startTekst: {
     color: "#FFF",

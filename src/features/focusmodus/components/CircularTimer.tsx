@@ -8,7 +8,7 @@ type CircularTimerProps = {
   donker?: boolean;
 };
 
-const STROKE_WIDTH = 8;
+const STROKE_WIDTH = 30;
 
 function formatTijd(seconden: number): string {
   const minuten = Math.floor(seconden / 60);
@@ -19,7 +19,7 @@ function formatTijd(seconden: number): string {
 export default function CircularTimer({
   remainingSeconds,
   progress,
-  size = 260,
+  size = 290,
   donker = false,
 }: CircularTimerProps) {
   const radius = (size - STROKE_WIDTH) / 2;
@@ -33,6 +33,7 @@ export default function CircularTimer({
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>
+      <Text style={[styles.label, { color: subtekstKleur }]}>focus</Text>
       <Svg width={size} height={size}>
         <Circle
           cx={size / 2}
@@ -42,6 +43,7 @@ export default function CircularTimer({
           strokeWidth={STROKE_WIDTH}
           fill="none"
         />
+
         <Circle
           cx={size / 2}
           cy={size / 2}
@@ -52,16 +54,13 @@ export default function CircularTimer({
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          rotation={-90}
-          origin={`${size / 2}, ${size / 2}`}
+          transform={`rotate(-90, ${size / 2}, ${size / 2})`}
         />
       </Svg>
-      <View style={styles.tijdContainer}>
-        <Text style={[styles.tijd, { color: tekstKleur }]}>
-          {formatTijd(remainingSeconds)}
-        </Text>
-        <Text style={[styles.label, { color: subtekstKleur }]}>focus</Text>
-      </View>
+
+      <Text style={[styles.tijd, { color: tekstKleur }]}>
+        {formatTijd(remainingSeconds)}
+      </Text>
     </View>
   );
 }

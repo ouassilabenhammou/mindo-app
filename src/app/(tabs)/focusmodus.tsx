@@ -5,13 +5,13 @@ import FocusScherm from "@/features/focusmodus/components/FocusScherm";
 import FocusStartScherm from "@/features/focusmodus/components/FocusStartScherm";
 import { useFocusTimer } from "@/features/focusmodus/hooks/useFocusTimer";
 
-const FOCUS_DUUR_SECONDEN = 25 * 60;
-
 export default function FocusModus() {
   const [isActief, setIsActief] = useState(false);
+  const [minuten, setMinuten] = useState(0);
   const navigation = useNavigation();
-  const { remaining, progress, isFinished, start, reset } =
-    useFocusTimer(FOCUS_DUUR_SECONDEN);
+  const { remaining, progress, isFinished, start, reset } = useFocusTimer(
+    minuten * 60,
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -47,8 +47,8 @@ export default function FocusModus() {
 
   return (
     <FocusStartScherm
-      remainingSeconds={remaining}
-      progress={progress}
+      minuten={minuten}
+      onMinutenChange={setMinuten}
       onStart={handleStart}
     />
   );
