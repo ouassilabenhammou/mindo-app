@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import TaakFormulier from "@/features/taken/components/TaakFormulier";
 import TodoLijst from "@/features/taken/components/TodoLijst";
@@ -58,29 +66,32 @@ export default function TakenScreen() {
 
       <Modal
         visible={formulierOpen}
-        animationType="slide"
         transparent
+        animationType="none"
         onRequestClose={sluitFormulier}
       >
-        <Pressable style={styles.overlay} onPress={sluitFormulier}>
-          <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
-            <View style={styles.sheetHeader}>
-              <Text style={styles.sheetTitel}>Nieuwe taak</Text>
-              <Pressable onPress={sluitFormulier} hitSlop={8}>
-                <Text style={styles.sluiten}>✕</Text>
-              </Pressable>
-            </View>
-            <TaakFormulier
-              tekst={tekst}
-              onTekstChange={setTekst}
-              geselecteerdePrioriteit={geselecteerdePrioriteit}
-              onPrioriteitChange={setGeselecteerdePrioriteit}
-              geselecteerdeDuur={geselecteerdeDuur}
-              onDuurChange={setGeselecteerdeDuur}
-              onToevoegen={handleToevoegen}
-            />
+        <KeyboardAvoidingView
+          style={styles.keyboardView}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={0}
+        >
+          <Pressable style={styles.overlay} onPress={sluitFormulier}>
+            <Pressable
+              style={styles.sheet}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <TaakFormulier
+                tekst={tekst}
+                onTekstChange={setTekst}
+                geselecteerdePrioriteit={geselecteerdePrioriteit}
+                onPrioriteitChange={setGeselecteerdePrioriteit}
+                geselecteerdeDuur={geselecteerdeDuur}
+                onDuurChange={setGeselecteerdeDuur}
+                onToevoegen={handleToevoegen}
+              />
+            </Pressable>
           </Pressable>
-        </Pressable>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );
@@ -133,12 +144,7 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     paddingTop: 16,
   },
-  sheetHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
+
   sheetTitel: {
     fontSize: 20,
     fontWeight: "600",
@@ -147,5 +153,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#888",
     padding: 4,
+  },
+  keyboardView: {
+    flex: 1,
+    justifyContent: "flex-end",
   },
 });

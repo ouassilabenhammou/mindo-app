@@ -1,18 +1,8 @@
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import type { Prioriteit } from "@/app/types/taken";
-import {
-  DUUR_OPTIES,
-  PRIORITEIT_LABELS,
-  PRIORITEITEN,
-} from "@/features/taken/constants/taken";
+import { DUUR_OPTIES } from "@/features/taken/constants/taken";
 
 type TaakFormulierProps = {
   tekst: string;
@@ -33,107 +23,95 @@ export default function TaakFormulier({
   onDuurChange,
   onToevoegen,
 }: TaakFormulierProps) {
+  const [toonDuurOpties, setToonDuurOpties] = useState(false);
+  const [toonPrioriteitOpties, setToonPrioriteitOpties] = useState(false);
+
+  const standaardDuur = DUUR_OPTIES[0];
+  const extraDuurOpties = DUUR_OPTIES.slice(1);
+  const inputRef = useRef<TextInput>(null);
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   return (
     <View style={styles.container}>
       <TextInput
+        autoFocus
         style={styles.input}
         value={tekst}
         onChangeText={onTekstChange}
         placeholder="Nieuwe taak"
+        placeholderTextColor="#9A9A9A"
         onSubmitEditing={onToevoegen}
         returnKeyType="done"
       />
+      <View style={styles.actieRij}>
+        <Pressable
+          style={styles.lijstKnop}
+          onPress={() => setToonPrioriteitOpties(!toonPrioriteitOpties)}
+        >
+          <Text style={styles.lijstTekst}>Taken</Text>
+        </Pressable>
 
-      <View style={styles.rij}>
-        <Text style={styles.label}>Prioriteit</Text>
-        <View style={styles.chips}>
-          <Pressable
+        <Pressable
+          style={[
+            styles.duurKnop,
+            geselecteerdeDuur === standaardDuur.value && styles.chipActief,
+          ]}
+          onPress={() => {
+            onDuurChange(standaardDuur.value);
+            setToonDuurOpties(!toonDuurOpties);
+          }}
+        >
+          <Text
             style={[
-              styles.chip,
-              geselecteerdePrioriteit === null && styles.chipActief,
+              styles.duurTekst,
+              geselecteerdeDuur === standaardDuur.value &&
+                styles.chipTekstActief,
             ]}
-            onPress={() => onPrioriteitChange(null)}
           >
-            <Text
-              style={[
-                styles.chipTekst,
-                geselecteerdePrioriteit === null && styles.chipTekstActief,
-              ]}
-            >
-              Geen
-            </Text>
-          </Pressable>
-          {PRIORITEITEN.map((prioriteit) => (
+            {geselecteerdeDuur
+              ? DUUR_OPTIES.find((optie) => optie.value === geselecteerdeDuur)
+                  ?.label
+              : standaardDuur.label}
+          </Text>
+        </Pressable>
+
+        <Pressable style={styles.icoonKnop}>
+          <Text style={styles.icoonTekst}>•••</Text>
+        </Pressable>
+
+        <Pressable style={styles.verstuurKnop} onPress={onToevoegen}>
+          <Text style={styles.verstuurTekst}>↑</Text>
+        </Pressable>
+      </View>
+
+      {toonDuurOpties && (
+        <View style={styles.chips}>
+          {extraDuurOpties.map(({ value, label }) => (
             <Pressable
-              key={prioriteit}
+              key={value}
               style={[
                 styles.chip,
-                geselecteerdePrioriteit === prioriteit && styles.chipActief,
+                geselecteerdeDuur === value && styles.chipActief,
               ]}
-              onPress={() => onPrioriteitChange(prioriteit)}
+              onPress={() => {
+                onDuurChange(value);
+                setToonDuurOpties(false);
+              }}
             >
               <Text
                 style={[
                   styles.chipTekst,
-                  geselecteerdePrioriteit === prioriteit &&
-                    styles.chipTekstActief,
+                  geselecteerdeDuur === value && styles.chipTekstActief,
                 ]}
               >
-                {PRIORITEIT_LABELS[prioriteit]}
+                {label}
               </Text>
             </Pressable>
           ))}
         </View>
-      </View>
-
-      <View style={styles.rij}>
-        <Text style={styles.label}>Duur</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.duurRij}
-        >
-          <Pressable
-            style={[
-              styles.chip,
-              geselecteerdeDuur === null && styles.chipActief,
-            ]}
-            onPress={() => onDuurChange(null)}
-          >
-            <Text
-              style={[
-                styles.chipTekst,
-                geselecteerdeDuur === null && styles.chipTekstActief,
-              ]}
-            >
-              Geen
-            </Text>
-          </Pressable>
-          {DUUR_OPTIES.map((duur) => (
-            <Pressable
-              key={duur}
-              style={[
-                styles.chip,
-                geselecteerdeDuur === duur && styles.chipActief,
-              ]}
-              onPress={() => onDuurChange(duur)}
-            >
-              <Text
-                style={[
-                  styles.chipTekst,
-                  geselecteerdeDuur === duur && styles.chipTekstActief,
-                ]}
-              >
-                {duur} min
-              </Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </View>
-
-      <Pressable style={styles.button} onPress={onToevoegen}>
-        <Text style={styles.buttonText}>Toevoegen</Text>
-      </Pressable>
+      )}
     </View>
   );
 }
@@ -143,28 +121,68 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 12,
     padding: 12,
     fontSize: 16,
   },
-  rij: {
+  actieRij: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
-  label: {
+  lijstKnop: {
+    paddingHorizontal: 12,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#F1F1F1",
+    justifyContent: "center",
+  },
+  lijstTekst: {
     fontSize: 14,
-    fontWeight: "600",
+    color: "#333",
+    fontWeight: "500",
+  },
+  duurKnop: {
+    paddingHorizontal: 12,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#F1F1F1",
+    justifyContent: "center",
+  },
+  duurTekst: {
+    fontSize: 14,
+    color: "#333",
+  },
+  icoonKnop: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#F1F1F1",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  icoonTekst: {
+    fontSize: 18,
     color: "#555",
+    lineHeight: 18,
+  },
+  verstuurKnop: {
+    marginLeft: "auto",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#4A6FD6",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  verstuurTekst: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "700",
   },
   chips: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
-  },
-  duurRij: {
-    gap: 8,
-    paddingRight: 16,
   },
   chip: {
     paddingHorizontal: 12,
@@ -183,16 +201,6 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   chipTekstActief: {
-    color: "#FFF",
-    fontWeight: "600",
-  },
-  button: {
-    backgroundColor: "#4A6FD6",
-    padding: 14,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  buttonText: {
     color: "#FFF",
     fontWeight: "600",
   },
