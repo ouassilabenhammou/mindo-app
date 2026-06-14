@@ -1,14 +1,8 @@
 import { useState } from "react";
-import {
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
-import TodoLijst from "@/features/taken/components/TodoLijst";
 import TaakFormulier from "@/features/taken/components/TaakFormulier";
+import TodoLijst from "@/features/taken/components/TodoLijst";
 import { useTaken } from "@/features/taken/hooks/useTaken";
 
 export default function TakenScreen() {
@@ -95,7 +89,6 @@ export default function TakenScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60,
   },
   header: {
     flexDirection: "row",
