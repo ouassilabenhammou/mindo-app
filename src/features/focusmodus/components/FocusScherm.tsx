@@ -8,7 +8,7 @@ type Props = {
   isPaused: boolean;
   onPause: () => void;
   onResume: () => void;
-  onStop: () => void;
+
   onMinutenChange: (minuten: number) => void;
 };
 
@@ -17,7 +17,7 @@ export default function FocusScherm({
   isPaused,
   onPause,
   onResume,
-  onStop,
+
   onMinutenChange,
 }: Props) {
   const boogMinuten = remainingSeconds / 60;
@@ -43,9 +43,6 @@ export default function FocusScherm({
             <Text style={styles.actieTekst}>
               {isPaused ? "Hervat" : "Pauze"}
             </Text>
-          </Pressable>
-          <Pressable style={styles.actieKnop} onPress={onStop}>
-            <Text style={styles.actieTekst}>Stop</Text>
           </Pressable>
         </View>
       </View>

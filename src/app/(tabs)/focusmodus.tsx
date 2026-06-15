@@ -9,8 +9,15 @@ export default function FocusModus() {
   const [isActief, setIsActief] = useState(false);
   const [minuten, setMinuten] = useState(0);
   const navigation = useNavigation();
-  const { remaining, isPaused, start, pause, resume, reset, updateRemainingMinutes } =
-    useFocusTimer(minuten * 60);
+  const {
+    remaining,
+    isPaused,
+    start,
+    pause,
+    resume,
+    reset,
+    updateRemainingMinutes,
+  } = useFocusTimer(minuten * 60);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -42,7 +49,6 @@ export default function FocusModus() {
         isPaused={isPaused}
         onPause={pause}
         onResume={resume}
-        onStop={handleStop}
         onMinutenChange={updateRemainingMinutes}
       />
     );
