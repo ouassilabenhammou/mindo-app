@@ -4,6 +4,7 @@ export type Prioriteit = "hoog" | "gemiddeld" | "laag";
 
 export type Taak = {
   id: number;
+  _uuid: string; // ← nieuw: Supabase UUID
   text: string;
   prioriteit: Prioriteit | null;
   duur: number | null;
