@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { focusLayoutStyles } from "../styles/focusLayout";
-import CircularMinutePicker from "./MinutenKiezer";
+import MinutenKiezer from "./MinutenKiezer";
 
 import type { focusStartProps } from "@/features/focusmodus/types/focusmodus";
 export default function FocusStartScherm({
@@ -14,10 +14,7 @@ export default function FocusStartScherm({
       <StatusBar style="dark" />
       <Text style={focusLayoutStyles.titel}>Focus</Text>
       <View style={focusLayoutStyles.timerWrapper}>
-        <CircularMinutePicker
-          minuten={minuten}
-          onMinutenChange={onMinutenChange}
-        />
+        <MinutenKiezer minuten={minuten} onMinutenChange={onMinutenChange} />
       </View>
 
       <View style={focusLayoutStyles.footer}>
