@@ -9,13 +9,12 @@ export default function FocusModus() {
   const [isActief, setIsActief] = useState(false);
   const [minuten, setMinuten] = useState(0);
   const navigation = useNavigation();
-  const { remaining, progress, isFinished, start, reset } = useFocusTimer(
-    minuten * 60,
-  );
+  const { remaining, isFinished, isPaused, start, pause, resume, reset } =
+    useFocusTimer(minuten * 60);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      tabBarStyle: isActief ? { display: "none" } : undefined,
+      tabBarStyle: isActief ? { backgroundColor: "black" } : undefined,
     });
   }, [isActief, navigation]);
 
@@ -39,7 +38,9 @@ export default function FocusModus() {
     return (
       <FocusScherm
         remainingSeconds={remaining}
-        progress={progress}
+        isPaused={isPaused}
+        onPause={pause}
+        onResume={resume}
         onStop={handleStop}
       />
     );
