@@ -6,8 +6,8 @@ import dayjs from "dayjs";
 import "dayjs/locale/nl";
 import isoWeek from "dayjs/plugin/isoWeek";
 
-import { fetchCanvasDeadlines } from "@/app/services/canvas";
-import type { Deadline } from "@/app/types/canvas";
+import { fetchCanvasDeadlines } from "@/features/canvas/services/canvas";
+import type { Deadline } from "@/features/canvas/types/canvas";
 
 dayjs.locale("nl");
 dayjs.extend(isoWeek);
