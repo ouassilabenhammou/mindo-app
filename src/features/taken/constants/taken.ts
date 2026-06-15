@@ -1,4 +1,4 @@
-import type { Prioriteit, SectieId } from "@/app/types/taken";
+import type { Prioriteit, SectieId } from "@/features/taken/types/taken";
 
 export const SECTIE_VOLGORDE: SectieId[] = [
   "nu",

@@ -1,7 +1,7 @@
 import Checkbox from "expo-checkbox";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import type { Taak } from "@/app/types/taken";
+import type { Taak } from "@/features/taken/types/taken";
 
 type TodoItemProps = {
   taak: Taak;
@@ -25,9 +25,7 @@ export default function TodoItem({
         <Text style={[styles.text, taak.completed && styles.completed]}>
           {taak.text}
         </Text>
-        {taak.duur !== null && (
-          <Text style={styles.duur}>{taak.duur} min</Text>
-        )}
+        {taak.duur !== null && <Text style={styles.duur}>{taak.duur} min</Text>}
       </View>
 
       <Pressable onPress={() => onVerwijder(taak.id)} hitSlop={8}>

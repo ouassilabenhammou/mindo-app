@@ -1,5 +1,8 @@
-import { PRIORITEIT_NAAR_SECTIE, SECTIE_VOLGORDE } from "@/features/taken/constants/taken";
-import type { Prioriteit, SectieId, Taak } from "@/app/types/taken";
+import {
+  PRIORITEIT_NAAR_SECTIE,
+  SECTIE_VOLGORDE,
+} from "@/features/taken/constants/taken";
+import type { Prioriteit, SectieId, Taak } from "@/features/taken/types/taken";
 
 export function bepaalSectie(prioriteit: Prioriteit | null): SectieId {
   if (!prioriteit) return "taak";

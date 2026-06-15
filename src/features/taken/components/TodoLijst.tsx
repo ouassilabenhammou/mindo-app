@@ -1,8 +1,12 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 
-import type { SectieId, SectieOpenState, Taak } from "@/app/types/taken";
-import { SECTIE_VOLGORDE } from "@/features/taken/constants/taken";
 import SectieLijst from "@/features/taken/components/SectieLijst";
+import { SECTIE_VOLGORDE } from "@/features/taken/constants/taken";
+import type {
+  SectieId,
+  SectieOpenState,
+  Taak,
+} from "@/features/taken/types/taken";
 
 type TodoLijstProps = {
   openSecties: SectieOpenState;

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-import type { Prioriteit } from "@/app/types/taken";
 import { DUUR_OPTIES } from "@/features/taken/constants/taken";
+import type { Prioriteit } from "@/features/taken/types/taken";
 
 type TaakFormulierProps = {
   tekst: string;

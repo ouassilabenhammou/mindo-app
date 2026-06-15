@@ -1,25 +1,17 @@
 import { StatusBar } from "expo-status-bar";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { focusLayoutStyles } from "../styles/focusLayout";
-import CircularMinutePicker from "./CircularMinutePicker";
+import CircularMinutePicker from "./MinutenKiezer";
 
-type Props = {
-  remainingSeconds: number;
-  isPaused: boolean;
-  onPause: () => void;
-  onResume: () => void;
-
-  onMinutenChange: (minuten: number) => void;
-};
+import type { focusSchermProps } from "@/features/focusmodus/types/focusmodus";
 
 export default function FocusScherm({
   remainingSeconds,
   isPaused,
   onPause,
   onResume,
-
   onMinutenChange,
-}: Props) {
+}: focusSchermProps) {
   const boogMinuten = remainingSeconds / 60;
 
   return (

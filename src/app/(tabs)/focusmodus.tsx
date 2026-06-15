@@ -2,7 +2,7 @@ import { useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 
 import FocusScherm from "@/features/focusmodus/components/FocusScherm";
-import FocusStartScherm from "@/features/focusmodus/components/FocusStartScherm";
+import FocusStartScherm from "@/features/focusmodus/components/FocusStart";
 import { useFocusTimer } from "@/features/focusmodus/hooks/useFocusTimer";
 
 export default function FocusModus() {

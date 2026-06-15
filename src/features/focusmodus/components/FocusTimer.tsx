@@ -1,13 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 
-type CircularTimerProps = {
-  remainingSeconds: number;
-  progress: number;
-  size?: number;
-  donker?: boolean;
-};
-
+import type { focusTimerProps } from "@/features/focusmodus/types/focusmodus";
 const STROKE_WIDTH = 30;
 
 function formatTijd(seconden: number): string {
@@ -16,12 +10,12 @@ function formatTijd(seconden: number): string {
   return `${minuten.toString().padStart(2, "0")}:${rest.toString().padStart(2, "0")}`;
 }
 
-export default function CircularTimer({
+export default function FocusTimer({
   remainingSeconds,
   progress,
   size = 290,
   donker = false,
-}: CircularTimerProps) {
+}: focusTimerProps) {
   const radius = (size - STROKE_WIDTH) / 2;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference * (1 - progress);

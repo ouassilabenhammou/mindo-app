@@ -1,18 +1,30 @@
 import { useCallback, useMemo, useState } from "react";
 
-import type { Prioriteit, SectieId, SectieOpenState, Taak } from "@/app/types/taken";
 import { STANDAARD_OPEN_SECTIES } from "@/features/taken/constants/taken";
-import { bepaalSectie, groepeerPerSectie, telPerSectie } from "@/features/taken/utils/taken";
+import type {
+  Prioriteit,
+  SectieId,
+  SectieOpenState,
+  Taak,
+} from "@/features/taken/types/taken";
+import {
+  bepaalSectie,
+  groepeerPerSectie,
+  telPerSectie,
+} from "@/features/taken/utils/taken";
 
 export function useTaken() {
   const [taken, setTaken] = useState<Taak[]>([]);
-  const [openSecties, setOpenSecties] =
-    useState<SectieOpenState>(STANDAARD_OPEN_SECTIES);
+  const [openSecties, setOpenSecties] = useState<SectieOpenState>(
+    STANDAARD_OPEN_SECTIES,
+  );
 
   const [tekst, setTekst] = useState("");
   const [geselecteerdePrioriteit, setGeselecteerdePrioriteit] =
     useState<Prioriteit | null>(null);
-  const [geselecteerdeDuur, setGeselecteerdeDuur] = useState<number | null>(null);
+  const [geselecteerdeDuur, setGeselecteerdeDuur] = useState<number | null>(
+    null,
+  );
 
   const takenPerSectie = useMemo(() => groepeerPerSectie(taken), [taken]);
   const aantalPerSectie = useMemo(() => telPerSectie(taken), [taken]);

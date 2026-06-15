@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import type { SectieId, Taak } from "@/app/types/taken";
-import { SECTIE_LABELS } from "@/features/taken/constants/taken";
 import SectieHeader from "@/features/taken/components/SectieHeader";
 import TodoItem from "@/features/taken/components/TodoItem";
+import { SECTIE_LABELS } from "@/features/taken/constants/taken";
+import type { SectieId, Taak } from "@/features/taken/types/taken";
 
 type SectieLijstProps = {
   sectieId: SectieId;

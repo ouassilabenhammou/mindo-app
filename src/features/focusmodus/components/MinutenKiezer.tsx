@@ -1,13 +1,25 @@
 import { useCallback } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Svg, { Circle, Line } from "react-native-svg";
 import { scheduleOnRN } from "react-native-worklets";
 
-const STROKE_WIDTH = 30;
-const KNOB_RADIUS = 14;
-const MIN_MINUTEN = 0;
-const MAX_MINUTEN = 60;
+import {
+  DONKER,
+  KNOB_RADIUS,
+  LICHT,
+  MAX_MINUTEN,
+  MIN_MINUTEN,
+  STROKE_WIDTH,
+} from "@/features/focusmodus/constants/minutenKiezer";
+import { minutenKiezerStyles } from "../styles/minutenKiezerStyles";
+import {
+  formatTijd,
+  hoekNaarMinuten,
+  minutenNaarHoek,
+  positieOpCirkel,
+} from "@/features/focusmodus/utils/minutenKiezer";
+import type { minutenKiezerProps } from "@/features/focusmodus/types/focusmodus";
 
 const MARKERS: { label: string; minuten: number }[] = [
   { label: "60", minuten: MIN_MINUTEN },
@@ -16,85 +28,13 @@ const MARKERS: { label: string; minuten: number }[] = [
   { label: "45", minuten: 45 },
 ];
 
-type Thema = {
-  ringAchtergrond: string;
-  ringActief: string;
-  tickActief: string;
-  tickInactief: string;
-  markerActief: string;
-  markerInactief: string;
-  knopRand: string;
-  centrumWaarde: string;
-  centrumLabel: string;
-};
-
-const LICHT: Thema = {
-  ringAchtergrond: "#E8EEF8",
-  ringActief: "#4A6FD6",
-  tickActief: "#4A6FD6",
-  tickInactief: "#C5CEE0",
-  markerActief: "#4A6FD6",
-  markerInactief: "#888888",
-  knopRand: "#FFFFFF",
-  centrumWaarde: "#1A1A1A",
-  centrumLabel: "#888888",
-};
-
-const DONKER: Thema = {
-  ringAchtergrond: "#2A2A2A",
-  ringActief: "#4A6FD6",
-  tickActief: "#4A6FD6",
-  tickInactief: "#444444",
-  markerActief: "#4A6FD6",
-  markerInactief: "#666666",
-  knopRand: "#1A1A1A",
-  centrumWaarde: "#FFFFFF",
-  centrumLabel: "#666666",
-};
-
-type CircularMinutePickerProps = {
-  minuten: number;
-  onMinutenChange?: (minuten: number) => void;
-  size?: number;
-  donker?: boolean;
-  resterendeSeconden?: number;
-};
-
-function formatTijd(seconden: number): string {
-  const minuten = Math.floor(seconden / 60);
-  const rest = seconden % 60;
-  return `${minuten.toString().padStart(2, "0")}:${rest.toString().padStart(2, "0")}`;
-}
-
-function minutenNaarHoek(minuten: number): number {
-  return (minuten / MAX_MINUTEN) * 360 - 90;
-}
-
-function hoekNaarMinuten(hoek: number): number {
-  const genormaliseerd = (((hoek + 90) % 360) + 360) % 360;
-  const ruw = (genormaliseerd / 360) * MAX_MINUTEN;
-  return Math.max(MIN_MINUTEN, Math.min(MAX_MINUTEN, Math.round(ruw)));
-}
-
-function positieOpCirkel(
-  hoekGraden: number,
-  straal: number,
-  midden: number,
-): { x: number; y: number } {
-  const hoekRad = (hoekGraden * Math.PI) / 180;
-  return {
-    x: midden + straal * Math.cos(hoekRad),
-    y: midden + straal * Math.sin(hoekRad),
-  };
-}
-
-export default function CircularMinutePicker({
+export default function MinutenKiezer({
   minuten,
   onMinutenChange,
   size = 290,
   donker = false,
   resterendeSeconden,
-}: CircularMinutePickerProps) {
+}: minutenKiezerProps) {
   const thema = donker ? DONKER : LICHT;
   const isFocusModus = resterendeSeconden !== undefined;
   const midden = size / 2;
@@ -130,7 +70,9 @@ export default function CircularMinutePicker({
   const gesture = Gesture.Simultaneous(panGesture, tapGesture);
 
   const cirkel = (
-    <View style={[styles.container, { width: size, height: size }]}>
+    <View
+      style={[minutenKiezerStyles.container, { width: size, height: size }]}
+    >
       <Svg width={size} height={size}>
         <Circle
           cx={midden}
@@ -141,9 +83,7 @@ export default function CircularMinutePicker({
           fill="none"
         />
         {Array.from({ length: MAX_MINUTEN + 1 }, (_, minuut) => {
-          const hoek = minutenNaarHoek(minuut);
           const isGroot = minuut % 5 === 0;
-
           const isActief = minuut <= minuten;
 
           return (
@@ -189,7 +129,7 @@ export default function CircularMinutePicker({
           <Text
             key={label}
             style={[
-              styles.marker,
+              minutenKiezerStyles.marker,
               {
                 left: pos.x - 24,
                 top: pos.y - 10,
@@ -203,19 +143,32 @@ export default function CircularMinutePicker({
         );
       })}
 
-      <View style={styles.centrum} pointerEvents="none">
+      <View style={minutenKiezerStyles.centrum} pointerEvents="none">
         {isFocusModus ? (
-          <Text style={[styles.tijd, { color: thema.centrumWaarde }]}>
+          <Text
+            style={[
+              minutenKiezerStyles.tijd,
+              { color: thema.centrumWaarde },
+            ]}
+          >
             {formatTijd(resterendeSeconden)}
           </Text>
         ) : (
           <>
             <Text
-              style={[styles.minutenWaarde, { color: thema.centrumWaarde }]}
+              style={[
+                minutenKiezerStyles.minutenWaarde,
+                { color: thema.centrumWaarde },
+              ]}
             >
               {Math.round(minuten)}
             </Text>
-            <Text style={[styles.minutenLabel, { color: thema.centrumLabel }]}>
+            <Text
+              style={[
+                minutenKiezerStyles.minutenLabel,
+                { color: thema.centrumLabel },
+              ]}
+            >
               min
             </Text>
           </>
@@ -230,39 +183,3 @@ export default function CircularMinutePicker({
 
   return <GestureDetector gesture={gesture}>{cirkel}</GestureDetector>;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  marker: {
-    position: "absolute",
-    width: 48,
-    textAlign: "center",
-    fontSize: 13,
-  },
-  centrum: {
-    position: "absolute",
-    alignItems: "center",
-  },
-  minutenWaarde: {
-    fontSize: 48,
-    fontWeight: "200",
-    fontVariant: ["tabular-nums"],
-    letterSpacing: 2,
-  },
-  minutenLabel: {
-    fontSize: 14,
-    fontWeight: "500",
-    textTransform: "uppercase",
-    letterSpacing: 3,
-    marginTop: -4,
-  },
-  tijd: {
-    fontSize: 48,
-    fontWeight: "200",
-    fontVariant: ["tabular-nums"],
-    letterSpacing: 2,
-  },
-});
