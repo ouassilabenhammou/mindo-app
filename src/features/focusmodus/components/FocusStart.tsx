@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { focusLayoutStyles } from "../styles/focusLayout";
-import CircularMinutePicker from "./CircularMinutePicker";
+import CircularMinutePicker from "./MinutenKiezer";
 
 type Props = {
   minuten: number;
