@@ -56,3 +56,21 @@ export async function updateTaakVoltooid({
 export async function verwijderTaakUitDatabase(id: string) {
   return supabase.from("tasks").delete().eq("id", id);
 }
+
+export async function updateTaakSectie({
+  id,
+  sectie,
+  priority,
+}: {
+  id: string;
+  sectie: SectieId;
+  priority: number;
+}) {
+  return supabase
+    .from("tasks")
+    .update({
+      category: SECTIE_NAAR_CATEGORY[sectie],
+      priority,
+    })
+    .eq("id", id);
+}

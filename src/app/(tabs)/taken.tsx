@@ -1,5 +1,7 @@
 import { useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -30,6 +32,8 @@ export default function TakenScreen() {
     toggleTaakVoltooid,
     verwijderTaak,
     toggleSectie,
+    prioriteerMetAI,
+    isPrioriteren,
   } = useTaken();
 
   function openFormulier() {
@@ -41,19 +45,50 @@ export default function TakenScreen() {
     setFormulierOpen(false);
   }
 
-  function handleToevoegen() {
-    if (voegTaakToe()) {
+  async function handleToevoegen() {
+    const gelukt = await voegTaakToe();
+    if (gelukt) {
       setFormulierOpen(false);
     }
+  }
+
+  async function handlePrioriteer() {
+    const gelukt = await prioriteerMetAI();
+
+    if (gelukt) {
+      Alert.alert("Klaar", "Je taken zijn ingedeeld bij Nu, Straks en Later.");
+      return;
+    }
+
+    Alert.alert(
+      "Prioriteren mislukt",
+      "Voeg eerst taken toe of controleer je internetverbinding.",
+    );
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Taken</Text>
-        <Pressable style={styles.fab} onPress={openFormulier}>
-          <Text style={styles.fabTekst}>+</Text>
-        </Pressable>
+        <View style={styles.headerActies}>
+          <Pressable
+            style={[
+              styles.prioriteerKnop,
+              isPrioriteren && styles.prioriteerKnopDisabled,
+            ]}
+            onPress={handlePrioriteer}
+            disabled={isPrioriteren}
+          >
+            {isPrioriteren ? (
+              <ActivityIndicator size="small" color="#4A6FD6" />
+            ) : (
+              <Text style={styles.prioriteerTekst}>Prioriteer</Text>
+            )}
+          </Pressable>
+          <Pressable style={styles.fab} onPress={openFormulier}>
+            <Text style={styles.fabTekst}>+</Text>
+          </Pressable>
+        </View>
       </View>
 
       <TodoLijst
@@ -111,6 +146,29 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "700",
+  },
+  headerActies: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  prioriteerKnop: {
+    paddingHorizontal: 14,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "#4A6FD6",
+    alignItems: "center",
+    justifyContent: "center",
+    minWidth: 88,
+  },
+  prioriteerKnopDisabled: {
+    opacity: 0.6,
+  },
+  prioriteerTekst: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#4A6FD6",
   },
   fab: {
     width: 44,

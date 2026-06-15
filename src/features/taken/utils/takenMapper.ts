@@ -31,7 +31,9 @@ export function rijNaarTaak(
       ? "hoog"
       : rij.priority === 1
         ? "gemiddeld"
-        : null) as Prioriteit | null,
+        : rij.priority === 0
+          ? "laag"
+          : null) as Prioriteit | null,
     duur: null,
     sectie: CATEGORY_NAAR_SECTIE[String(rij.category ?? "later")] ?? "later",
     completed: Boolean(rij.is_completed),
