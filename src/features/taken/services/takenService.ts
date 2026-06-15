@@ -1,0 +1,58 @@
+import type { SectieId } from "@/features/taken/types/taken";
+import { SECTIE_NAAR_CATEGORY } from "@/features/taken/utils/takenMapper";
+import { supabase } from "@/lib/supabase";
+
+export async function haalTakenOp() {
+  return supabase
+    .from("tasks")
+    .select("*")
+    .order("position", { ascending: true })
+    .order("created_at", { ascending: false });
+}
+
+export async function voegTaakToeAanDatabase({
+  userId,
+  title,
+  sectie,
+  priority,
+}: {
+  userId: string;
+  title: string;
+  sectie: SectieId;
+  priority: number;
+}) {
+  return supabase
+    .from("tasks")
+    .insert({
+      user_id: userId,
+      title,
+      category: SECTIE_NAAR_CATEGORY[sectie],
+      priority,
+      is_completed: false,
+    })
+    .select()
+    .single();
+}
+
+export async function updateTaakVoltooid({
+  id,
+  completed,
+  sectie,
+}: {
+  id: string;
+  completed: boolean;
+  sectie: SectieId;
+}) {
+  return supabase
+    .from("tasks")
+    .update({
+      is_completed: completed,
+      category: SECTIE_NAAR_CATEGORY[sectie],
+      completed_at: completed ? new Date().toISOString() : null,
+    })
+    .eq("id", id);
+}
+
+export async function verwijderTaakUitDatabase(id: string) {
+  return supabase.from("tasks").delete().eq("id", id);
+}
