@@ -3,17 +3,12 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { focusLayoutStyles } from "../styles/focusLayout";
 import CircularMinutePicker from "./MinutenKiezer";
 
-type Props = {
-  minuten: number;
-  onMinutenChange: (minuten: number) => void;
-  onStart: () => void;
-};
-
+import type { focusStartProps } from "@/features/focusmodus/types/focusmodus";
 export default function FocusStartScherm({
   minuten,
   onMinutenChange,
   onStart,
-}: Props) {
+}: focusStartProps) {
   return (
     <View style={focusLayoutStyles.container}>
       <StatusBar style="dark" />

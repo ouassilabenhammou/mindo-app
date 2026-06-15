@@ -4,10 +4,15 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Svg, { Circle, Line } from "react-native-svg";
 import { scheduleOnRN } from "react-native-worklets";
 
-const STROKE_WIDTH = 30;
-const KNOB_RADIUS = 14;
-const MIN_MINUTEN = 0;
-const MAX_MINUTEN = 60;
+import {
+  DONKER,
+  KNOB_RADIUS,
+  LICHT,
+  MAX_MINUTEN,
+  MIN_MINUTEN,
+  STROKE_WIDTH,
+} from "@/features/focusmodus/constants/minutenKiezer";
+import type { minutenKiezerProps } from "@/features/focusmodus/types/focusmodus";
 
 const MARKERS: { label: string; minuten: number }[] = [
   { label: "60", minuten: MIN_MINUTEN },
@@ -15,50 +20,6 @@ const MARKERS: { label: string; minuten: number }[] = [
   { label: "30", minuten: 30 },
   { label: "45", minuten: 45 },
 ];
-
-type Thema = {
-  ringAchtergrond: string;
-  ringActief: string;
-  tickActief: string;
-  tickInactief: string;
-  markerActief: string;
-  markerInactief: string;
-  knopRand: string;
-  centrumWaarde: string;
-  centrumLabel: string;
-};
-
-const LICHT: Thema = {
-  ringAchtergrond: "#E8EEF8",
-  ringActief: "#4A6FD6",
-  tickActief: "#4A6FD6",
-  tickInactief: "#C5CEE0",
-  markerActief: "#4A6FD6",
-  markerInactief: "#888888",
-  knopRand: "#FFFFFF",
-  centrumWaarde: "#1A1A1A",
-  centrumLabel: "#888888",
-};
-
-const DONKER: Thema = {
-  ringAchtergrond: "#2A2A2A",
-  ringActief: "#4A6FD6",
-  tickActief: "#4A6FD6",
-  tickInactief: "#444444",
-  markerActief: "#4A6FD6",
-  markerInactief: "#666666",
-  knopRand: "#1A1A1A",
-  centrumWaarde: "#FFFFFF",
-  centrumLabel: "#666666",
-};
-
-type CircularMinutePickerProps = {
-  minuten: number;
-  onMinutenChange?: (minuten: number) => void;
-  size?: number;
-  donker?: boolean;
-  resterendeSeconden?: number;
-};
 
 function formatTijd(seconden: number): string {
   const minuten = Math.floor(seconden / 60);
@@ -88,13 +49,13 @@ function positieOpCirkel(
   };
 }
 
-export default function CircularMinutePicker({
+export default function MinutenKiezer({
   minuten,
   onMinutenChange,
   size = 290,
   donker = false,
   resterendeSeconden,
-}: CircularMinutePickerProps) {
+}: minutenKiezerProps) {
   const thema = donker ? DONKER : LICHT;
   const isFocusModus = resterendeSeconden !== undefined;
   const midden = size / 2;
