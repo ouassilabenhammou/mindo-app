@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { STANDAARD_OPEN_SECTIES } from "@/features/taken/constants/taken";
-import { prioriteerTaken } from "@/features/ai/services/mistral";
+import {
+  prioritizeTasks,
+  type PrioritizeResult,
+} from "@/services/aiPrioritizeService";
 import {
   haalTakenOp,
-  updateTaakSectie,
   updateTaakVoltooid,
   verwijderTaakUitDatabase,
   voegTaakToeAanDatabase,
@@ -19,7 +21,6 @@ import {
   bepaalSectie,
   groepeerPerSectie,
   prioriteitNaarDbWaarde,
-  sectieNaarPrioriteit,
   telPerSectie,
 } from "@/features/taken/utils/taken";
 import { rijNaarTaak } from "@/features/taken/utils/takenMapper";
@@ -171,64 +172,32 @@ export function useTaken() {
     }));
   }, []);
 
-  const prioriteerMetAI = useCallback(async (): Promise<boolean> => {
-    const openTaken = taken.filter((taak) => !taak.completed);
-    if (openTaken.length === 0) return false;
+  const prioriteerMetAI =
+    useCallback(async (): Promise<PrioritizeResult | null> => {
+      const openTaken = taken.filter((taak) => !taak.completed);
+      if (openTaken.length === 0) return null;
 
-    setIsPrioriteren(true);
+      setIsPrioriteren(true);
 
-    try {
-      const resultaat = await prioriteerTaken(
-        openTaken.map((taak) => ({
-          id: taak._uuid,
-          text: taak.text,
-          duur: taak.duur,
-        })),
-      );
+      try {
+        const result = await prioritizeTasks();
+        await laadTaken();
 
-      if (!resultaat) return false;
+        setOpenSecties((huidig) => ({
+          ...huidig,
+          nu: true,
+          straks: true,
+          later: true,
+        }));
 
-      const vorigeTaken = taken;
-
-      setTaken((huidig) =>
-        huidig.map((taak) => {
-          const update = resultaat.find((item) => item.id === taak._uuid);
-          if (!update) return taak;
-
-          const prioriteit = sectieNaarPrioriteit(update.sectie);
-          return { ...taak, sectie: update.sectie, prioriteit };
-        }),
-      );
-
-      const updates = await Promise.all(
-        resultaat.map((item) =>
-          updateTaakSectie({
-            id: item.id,
-            sectie: item.sectie,
-            priority: prioriteitNaarDbWaarde(sectieNaarPrioriteit(item.sectie)),
-          }),
-        ),
-      );
-
-      const mislukt = updates.some(({ error }) => error);
-      if (mislukt) {
-        console.error("Prioriteren opslaan mislukt");
-        setTaken(vorigeTaken);
-        return false;
+        return result;
+      } catch (error) {
+        console.error("Prioriteren mislukt:", error);
+        return null;
+      } finally {
+        setIsPrioriteren(false);
       }
-
-      setOpenSecties((huidig) => ({
-        ...huidig,
-        nu: true,
-        straks: true,
-        later: true,
-      }));
-
-      return true;
-    } finally {
-      setIsPrioriteren(false);
-    }
-  }, [taken]);
+    }, [taken, laadTaken]);
 
   return {
     taken,

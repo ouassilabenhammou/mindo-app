@@ -53,16 +53,19 @@ export default function TakenScreen() {
   }
 
   async function handlePrioriteer() {
-    const gelukt = await prioriteerMetAI();
+    const result = await prioriteerMetAI();
 
-    if (gelukt) {
-      Alert.alert("Klaar", "Je taken zijn ingedeeld bij Nu, Straks en Later.");
+    if (result?.success) {
+      Alert.alert(
+        "Geprioriteerd ✨",
+        `${result.updated} van de ${result.total} taken zijn ingedeeld.`,
+      );
       return;
     }
 
     Alert.alert(
-      "Prioriteren mislukt",
-      "Voeg eerst taken toe of controleer je internetverbinding.",
+      "Fout",
+      result?.message ?? "Kon taken niet prioriteren. Voeg eerst taken toe.",
     );
   }
 
@@ -80,10 +83,13 @@ export default function TakenScreen() {
             disabled={isPrioriteren}
           >
             {isPrioriteren ? (
-              <ActivityIndicator size="small" color="#4A6FD6" />
+              <ActivityIndicator size="small" color="#FFF" />
             ) : (
-              <Text style={styles.prioriteerTekst}>Prioriteer</Text>
+              <Text style={styles.prioriteerEmoji}>✨</Text>
             )}
+            <Text style={styles.prioriteerTekst}>
+              {isPrioriteren ? "Bezig…" : "Prioriteer met AI"}
+            </Text>
           </Pressable>
           <Pressable style={styles.fab} onPress={openFormulier}>
             <Text style={styles.fabTekst}>+</Text>
@@ -153,22 +159,24 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   prioriteerKnop: {
-    paddingHorizontal: 14,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "#4A6FD6",
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    minWidth: 88,
+    backgroundColor: "#9F8FE8",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    gap: 6,
   },
   prioriteerKnopDisabled: {
     opacity: 0.6,
   },
+  prioriteerEmoji: {
+    fontSize: 15,
+  },
   prioriteerTekst: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#4A6FD6",
+    color: "#FFF",
   },
   fab: {
     width: 44,

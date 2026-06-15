@@ -74,3 +74,12 @@ export async function updateTaakSectie({
     })
     .eq("id", id);
 }
+
+export async function haalTakenMetVervaldatum() {
+  return supabase
+    .from("tasks")
+    .select("id, title, due_date, category, is_completed")
+    .not("due_date", "is", null)
+    .eq("is_completed", false)
+    .order("due_date", { ascending: true });
+}

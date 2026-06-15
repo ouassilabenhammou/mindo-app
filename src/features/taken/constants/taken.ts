@@ -38,6 +38,12 @@ export const PRIORITEIT_LABELS: Record<Prioriteit, string> = {
 
 export const PRIORITEITEN: Prioriteit[] = ["hoog", "gemiddeld", "laag"];
 
+export const CATEGORY_KLEUREN: Record<string, string> = {
+  nu: "#FF6161",
+  straks: "#FFC94A",
+  later: "#9F8FE8",
+};
+
 const STANDAARD_DUUR = 5;
 
 export const DUUR_OPTIES = [
