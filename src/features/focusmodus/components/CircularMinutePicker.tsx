@@ -224,7 +224,7 @@ export default function CircularMinutePicker({
     </View>
   );
 
-  if (isFocusModus) {
+  if (!onMinutenChange) {
     return cirkel;
   }
 

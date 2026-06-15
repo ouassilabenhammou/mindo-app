@@ -12,6 +12,13 @@ export function useFocusTimer(totalSeconds: number) {
   }, [totalSeconds, isRunning, isPaused]);
 
   useEffect(() => {
+    if (remaining === 0 && isRunning) {
+      setIsRunning(false);
+      setIsPaused(false);
+    }
+  }, [remaining, isRunning]);
+
+  useEffect(() => {
     if (!isRunning || remaining <= 0) return;
 
     const interval = setInterval(() => {
@@ -49,6 +56,11 @@ export function useFocusTimer(totalSeconds: number) {
     setRemaining(totalSeconds);
   }, [totalSeconds]);
 
+  const updateRemainingMinutes = useCallback((minuten: number) => {
+    const clamped = Math.max(0, Math.min(60, Math.round(minuten)));
+    setRemaining(clamped * 60);
+  }, []);
+
   const progress = remaining / totalSeconds;
   const isFinished = remaining === 0 && !isRunning;
 
@@ -62,5 +74,6 @@ export function useFocusTimer(totalSeconds: number) {
     pause,
     resume,
     reset,
+    updateRemainingMinutes,
   };
 }

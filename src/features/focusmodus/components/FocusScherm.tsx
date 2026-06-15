@@ -9,6 +9,7 @@ type Props = {
   onPause: () => void;
   onResume: () => void;
   onStop: () => void;
+  onMinutenChange: (minuten: number) => void;
 };
 
 export default function FocusScherm({
@@ -17,6 +18,7 @@ export default function FocusScherm({
   onPause,
   onResume,
   onStop,
+  onMinutenChange,
 }: Props) {
   const boogMinuten = remainingSeconds / 60;
 
@@ -28,6 +30,7 @@ export default function FocusScherm({
         <CircularMinutePicker
           minuten={boogMinuten}
           resterendeSeconden={remainingSeconds}
+          onMinutenChange={onMinutenChange}
           donker
         />
       </View>

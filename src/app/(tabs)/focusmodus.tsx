@@ -9,7 +9,7 @@ export default function FocusModus() {
   const [isActief, setIsActief] = useState(false);
   const [minuten, setMinuten] = useState(0);
   const navigation = useNavigation();
-  const { remaining, isFinished, isPaused, start, pause, resume, reset } =
+  const { remaining, isPaused, start, pause, resume, reset, updateRemainingMinutes } =
     useFocusTimer(minuten * 60);
 
   useLayoutEffect(() => {
@@ -19,10 +19,11 @@ export default function FocusModus() {
   }, [isActief, navigation]);
 
   useEffect(() => {
-    if (isFinished && isActief) {
+    if (remaining === 0 && isActief) {
+      reset();
       setIsActief(false);
     }
-  }, [isFinished, isActief]);
+  }, [remaining, isActief, reset]);
 
   function handleStart() {
     start();
@@ -42,6 +43,7 @@ export default function FocusModus() {
         onPause={pause}
         onResume={resume}
         onStop={handleStop}
+        onMinutenChange={updateRemainingMinutes}
       />
     );
   }
