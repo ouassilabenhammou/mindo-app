@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Modal,
@@ -56,9 +55,12 @@ export default function TakenScreen() {
     const result = await prioriteerMetAI();
 
     if (result?.success) {
+      const breakdown = result.breakdown
+        ? `\n\n${result.breakdown.deterministic} via regels, ${result.breakdown.ai_judged} via AI.`
+        : "";
       Alert.alert(
         "Geprioriteerd ✨",
-        `${result.updated} van de ${result.total} taken zijn ingedeeld.`,
+        `${result.updated} van de ${result.total} taken zijn ingedeeld.${breakdown}`,
       );
       return;
     }
@@ -82,11 +84,6 @@ export default function TakenScreen() {
             onPress={handlePrioriteer}
             disabled={isPrioriteren}
           >
-            {isPrioriteren ? (
-              <ActivityIndicator size="small" color="#FFF" />
-            ) : (
-              <Text style={styles.prioriteerEmoji}>✨</Text>
-            )}
             <Text style={styles.prioriteerTekst}>
               {isPrioriteren ? "Bezig…" : "Prioriteer met AI"}
             </Text>
@@ -161,10 +158,10 @@ const styles = StyleSheet.create({
   prioriteerKnop: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#9F8FE8",
+    backgroundColor: "blue",
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: 28,
     gap: 6,
   },
   prioriteerKnopDisabled: {

@@ -97,6 +97,7 @@ export function useTaken() {
       title: trimmed,
       sectie,
       priority,
+      durationMinutes: geselecteerdeDuur,
     });
 
     if (error) {
@@ -107,7 +108,7 @@ export function useTaken() {
     setTaken((huidig) => [...huidig, rijNaarTaak(data)]);
     resetFormulier();
     return true;
-  }, [tekst, geselecteerdePrioriteit, resetFormulier]);
+  }, [tekst, geselecteerdePrioriteit, geselecteerdeDuur, resetFormulier]);
 
   const toggleTaakVoltooid = useCallback(
     async (id: number) => {

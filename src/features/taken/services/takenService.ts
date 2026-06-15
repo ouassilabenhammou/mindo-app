@@ -15,11 +15,13 @@ export async function voegTaakToeAanDatabase({
   title,
   sectie,
   priority,
+  durationMinutes,
 }: {
   userId: string;
   title: string;
   sectie: SectieId;
   priority: number;
+  durationMinutes?: number | null;
 }) {
   return supabase
     .from("tasks")
@@ -28,6 +30,7 @@ export async function voegTaakToeAanDatabase({
       title,
       category: SECTIE_NAAR_CATEGORY[sectie],
       priority,
+      duration_minutes: durationMinutes ?? null,
       is_completed: false,
     })
     .select()

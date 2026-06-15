@@ -4,6 +4,10 @@ export interface PrioritizeResult {
   success: boolean;
   updated: number;
   total: number;
+  breakdown?: {
+    deterministic: number;
+    ai_judged: number;
+  };
   prioriteiten?: { id: string; category: string }[];
   errors?: string[];
   message?: string;
