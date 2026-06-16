@@ -1,10 +1,42 @@
 import { Mistral } from "@mistralai/mistralai";
 
 import type {
+  BraindumpResponse,
+  BraindumpTaak,
+} from "@/features/ai/types/braindump";
+import type {
   PrioriteerInput,
   PrioriteerResponse,
   PrioriteerResultaat,
 } from "@/features/ai/types/prioriteit";
+
+const BRAIN_DUMP_INSTRUCTIES = `Je bent Mindo Coach.
+
+Je helpt studenten om een braindump om te zetten naar concrete taken.
+
+Jouw taak:
+
+* Analyseer de volledige braindump van de gebruiker.
+* Haal alleen concrete taken, acties of verplichtingen uit de tekst.
+* Verzin geen nieuwe taken.
+* Voeg geen informatie toe die niet door de gebruiker is genoemd.
+* Splits alleen op wanneer duidelijk meerdere taken worden genoemd.
+* Houd taaknamen kort en duidelijk.
+* Verwijder dubbele taken.
+* Negeer losse gedachten, emoties of informatie waar geen actie aan gekoppeld is.
+* Herken datums wanneer deze expliciet genoemd worden.
+* Gebruik de genoemde datum alleen wanneer deze duidelijk uit de tekst blijkt.
+
+Regels:
+
+* Maak van elke taak één duidelijke titel.
+* Voeg geen prioriteit toe.
+* Voeg geen duur toe.
+* Voeg geen subtaken toe.
+* Geef geen uitleg.
+
+Geef ALLEEN geldige JSON terug in dit formaat:
+{"taken":[{"titel":"...","datum":"YYYY-MM-DD"|null}]}`;
 
 const apiKey = process.env.EXPO_PUBLIC_MISTRAL_API_KEY;
 
@@ -36,6 +68,21 @@ function parsePrioriteerResponse(content: string): PrioriteerResultaat[] {
   );
 }
 
+function parseBraindumpResponse(content: string): BraindumpTaak[] {
+  const parsed = JSON.parse(content) as BraindumpResponse;
+
+  if (!Array.isArray(parsed.taken)) {
+    throw new Error("Ongeldig AI-antwoord: 'taken' ontbreekt");
+  }
+
+  return parsed.taken.filter(
+    (item): item is BraindumpTaak =>
+      typeof item.titel === "string" &&
+      item.titel.length > 0 &&
+      (item.datum === null || typeof item.datum === "string"),
+  );
+}
+
 function haalTekstUitResponse(
   outputs: Array<{ type?: string; content?: string | unknown[] }>,
 ): string | null {
@@ -60,6 +107,49 @@ function haalTekstUitResponse(
   }
 
   return null;
+}
+
+export async function braindumpNaarTaken(
+  braindump: string,
+): Promise<BraindumpTaak[] | null> {
+  if (!apiKey) {
+    console.error("Mistral API key ontbreekt");
+    return null;
+  }
+
+  const tekst = braindump.trim();
+  if (!tekst) return [];
+
+  try {
+    const response = await client.beta.conversations.start({
+      model: "mistral-medium-latest",
+      inputs: [
+        {
+          role: "user",
+          content: tekst,
+        },
+      ],
+      instructions: BRAIN_DUMP_INSTRUCTIES,
+      completionArgs: {
+        responseFormat: { type: "json_object" },
+        temperature: 0.7,
+        maxTokens: 2048,
+        topP: 1,
+      },
+      tools: [],
+    });
+
+    const content = haalTekstUitResponse(response.outputs);
+    if (!content) {
+      console.error("Geen AI-antwoord ontvangen");
+      return null;
+    }
+
+    return parseBraindumpResponse(content);
+  } catch (error) {
+    console.error("Mistral fout:", error);
+    return null;
+  }
 }
 
 export async function prioriteerTaken(
