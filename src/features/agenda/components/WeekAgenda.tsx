@@ -8,9 +8,27 @@ import isoWeek from "dayjs/plugin/isoWeek";
 
 import { fetchCanvasDeadlines } from "@/features/canvas/services/canvas";
 import type { Deadline } from "@/features/canvas/types/canvas";
+import { CATEGORY_KLEUREN } from "@/features/taken/constants/taken";
+import { haalTakenMetVervaldatum } from "@/features/taken/services/takenService";
 
 dayjs.locale("nl");
 dayjs.extend(isoWeek);
+
+type TaakMetVervaldatum = {
+  id: string;
+  title: string;
+  due_date: string;
+  category: string;
+  is_completed: boolean;
+};
+
+function kleurVoorCategory(category: string | null | undefined) {
+  return CATEGORY_KLEUREN[category ?? ""] ?? "#9F8FE8";
+}
+
+function hoortTaakBijDatum(taak: TaakMetVervaldatum, date: string) {
+  return dayjs(taak.due_date).isSame(dayjs(date), "day");
+}
 
 function hoortDeadlineBijDatum(deadline: Deadline, date: string) {
   if (!deadline.due_at) return false;
@@ -41,6 +59,7 @@ export default function WeekAgenda() {
   );
 
   const [deadlines, setDeadlines] = useState<Deadline[]>([]);
+  const [taken, setTaken] = useState<TaakMetVervaldatum[]>([]);
 
   const { width } = useWindowDimensions();
   const dayWidth = (width - 40) / 7;
@@ -57,10 +76,27 @@ export default function WeekAgenda() {
       .catch((error: Error) => {
         console.log(error.message);
       });
+
+    haalTakenMetVervaldatum()
+      .then(({ data, error }) => {
+        if (error) {
+          console.log(error.message);
+          return;
+        }
+
+        setTaken((data ?? []) as TaakMetVervaldatum[]);
+      })
+      .catch((error: Error) => {
+        console.log(error.message);
+      });
   }, []);
 
   const deadlinesVoorGeselecteerdeDag = deadlines.filter((deadline) =>
     hoortDeadlineBijDatum(deadline, activeDate),
+  );
+
+  const takenVoorGeselecteerdeDag = taken.filter((taak) =>
+    hoortTaakBijDatum(taak, activeDate),
   );
 
   return (
@@ -139,6 +175,13 @@ export default function WeekAgenda() {
             hoortDeadlineBijDatum(deadline, date),
           );
 
+          const takenVoorDezeDag = taken.filter((taak) =>
+            hoortTaakBijDatum(taak, date),
+          );
+
+          const heeftItems =
+            deadlinesVoorDezeDag.length > 0 || takenVoorDezeDag.length > 0;
+
           return (
             <View style={{ width: dayWidth - 8, alignItems: "center" }}>
               <View
@@ -176,15 +219,36 @@ export default function WeekAgenda() {
                     {dayjs(date).format("D")}
                   </Text>
 
-                  {deadlinesVoorDezeDag.length > 0 && (
+                  {heeftItems && (
                     <View
                       style={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: 3,
-                        backgroundColor: "red",
+                        flexDirection: "row",
+                        gap: 3,
                       }}
-                    />
+                    >
+                      {takenVoorDezeDag.length > 0 && (
+                        <View
+                          style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: 3,
+                            backgroundColor: kleurVoorCategory(
+                              takenVoorDezeDag[0].category,
+                            ),
+                          }}
+                        />
+                      )}
+                      {deadlinesVoorDezeDag.length > 0 && (
+                        <View
+                          style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: 3,
+                            backgroundColor: "red",
+                          }}
+                        />
+                      )}
+                    </View>
                   )}
                 </View>
               </View>
@@ -194,9 +258,29 @@ export default function WeekAgenda() {
       />
 
       <View>
-        {deadlinesVoorGeselecteerdeDag.length === 0 ? (
+        {takenVoorGeselecteerdeDag.map((taak) => (
+          <View
+            key={taak.id}
+            style={{
+              marginBottom: 12,
+              padding: 12,
+              borderRadius: 12,
+              backgroundColor: kleurVoorCategory(taak.category),
+            }}
+          >
+            <Text style={{ fontWeight: "600", fontSize: 16, color: "#FFF" }}>
+              {taak.title}
+            </Text>
+            <Text style={{ marginTop: 4, color: "#FFF" }}>
+              {dayjs(taak.due_date).format("HH:mm")}
+            </Text>
+          </View>
+        ))}
+
+        {deadlinesVoorGeselecteerdeDag.length === 0 &&
+        takenVoorGeselecteerdeDag.length === 0 ? (
           <Text style={{ color: "grey" }}>
-            Geen Canvas-deadlines voor deze dag.
+            Geen taken of Canvas-deadlines voor deze dag.
           </Text>
         ) : (
           deadlinesVoorGeselecteerdeDag.map((deadline) => {

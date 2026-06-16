@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -30,6 +31,8 @@ export default function TakenScreen() {
     toggleTaakVoltooid,
     verwijderTaak,
     toggleSectie,
+    prioriteerMetAI,
+    isPrioriteren,
   } = useTaken();
 
   function openFormulier() {
@@ -41,19 +44,54 @@ export default function TakenScreen() {
     setFormulierOpen(false);
   }
 
-  function handleToevoegen() {
-    if (voegTaakToe()) {
+  async function handleToevoegen() {
+    const gelukt = await voegTaakToe();
+    if (gelukt) {
       setFormulierOpen(false);
     }
+  }
+
+  async function handlePrioriteer() {
+    const result = await prioriteerMetAI();
+
+    if (result?.success) {
+      const breakdown = result.breakdown
+        ? `\n\n${result.breakdown.deterministic} via regels, ${result.breakdown.ai_judged} via AI.`
+        : "";
+      Alert.alert(
+        "Geprioriteerd ✨",
+        `${result.updated} van de ${result.total} taken zijn ingedeeld.${breakdown}`,
+      );
+      return;
+    }
+
+    Alert.alert(
+      "Fout",
+      result?.message ?? "Kon taken niet prioriteren. Voeg eerst taken toe.",
+    );
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Taken</Text>
-        <Pressable style={styles.fab} onPress={openFormulier}>
-          <Text style={styles.fabTekst}>+</Text>
-        </Pressable>
+        <View style={styles.headerActies}>
+          <Pressable
+            style={[
+              styles.prioriteerKnop,
+              isPrioriteren && styles.prioriteerKnopDisabled,
+            ]}
+            onPress={handlePrioriteer}
+            disabled={isPrioriteren}
+          >
+            <Text style={styles.prioriteerTekst}>
+              {isPrioriteren ? "Bezig…" : "Prioriteer met AI"}
+            </Text>
+          </Pressable>
+          <Pressable style={styles.fab} onPress={openFormulier}>
+            <Text style={styles.fabTekst}>+</Text>
+          </Pressable>
+        </View>
       </View>
 
       <TodoLijst
@@ -111,6 +149,31 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "700",
+  },
+  headerActies: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  prioriteerKnop: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "blue",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 28,
+    gap: 6,
+  },
+  prioriteerKnopDisabled: {
+    opacity: 0.6,
+  },
+  prioriteerEmoji: {
+    fontSize: 15,
+  },
+  prioriteerTekst: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#FFF",
   },
   fab: {
     width: 44,

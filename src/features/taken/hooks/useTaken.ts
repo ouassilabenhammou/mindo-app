@@ -2,6 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { STANDAARD_OPEN_SECTIES } from "@/features/taken/constants/taken";
 import {
+  prioritizeTasks,
+  type PrioritizeResult,
+} from "@/services/aiPrioritizeService";
+import {
   haalTakenOp,
   updateTaakVoltooid,
   verwijderTaakUitDatabase,
@@ -16,6 +20,7 @@ import type {
 import {
   bepaalSectie,
   groepeerPerSectie,
+  prioriteitNaarDbWaarde,
   telPerSectie,
 } from "@/features/taken/utils/taken";
 import { rijNaarTaak } from "@/features/taken/utils/takenMapper";
@@ -32,6 +37,7 @@ export function useTaken() {
   const [geselecteerdeDuur, setGeselecteerdeDuur] = useState<number | null>(
     null,
   );
+  const [isPrioriteren, setIsPrioriteren] = useState(false);
 
   const laadTaken = useCallback(async () => {
     const { data, error } = await haalTakenOp();
@@ -84,18 +90,14 @@ export function useTaken() {
     }
 
     const sectie = bepaalSectie(geselecteerdePrioriteit);
-    const priority =
-      geselecteerdePrioriteit === "hoog"
-        ? 2
-        : geselecteerdePrioriteit === "gemiddeld"
-          ? 1
-          : 0;
+    const priority = prioriteitNaarDbWaarde(geselecteerdePrioriteit);
 
     const { data, error } = await voegTaakToeAanDatabase({
       userId: user.id,
       title: trimmed,
       sectie,
       priority,
+      durationMinutes: geselecteerdeDuur,
     });
 
     if (error) {
@@ -106,7 +108,7 @@ export function useTaken() {
     setTaken((huidig) => [...huidig, rijNaarTaak(data)]);
     resetFormulier();
     return true;
-  }, [tekst, geselecteerdePrioriteit, resetFormulier]);
+  }, [tekst, geselecteerdePrioriteit, geselecteerdeDuur, resetFormulier]);
 
   const toggleTaakVoltooid = useCallback(
     async (id: number) => {
@@ -171,6 +173,33 @@ export function useTaken() {
     }));
   }, []);
 
+  const prioriteerMetAI =
+    useCallback(async (): Promise<PrioritizeResult | null> => {
+      const openTaken = taken.filter((taak) => !taak.completed);
+      if (openTaken.length === 0) return null;
+
+      setIsPrioriteren(true);
+
+      try {
+        const result = await prioritizeTasks();
+        await laadTaken();
+
+        setOpenSecties((huidig) => ({
+          ...huidig,
+          nu: true,
+          straks: true,
+          later: true,
+        }));
+
+        return result;
+      } catch (error) {
+        console.error("Prioriteren mislukt:", error);
+        return null;
+      } finally {
+        setIsPrioriteren(false);
+      }
+    }, [taken, laadTaken]);
+
   return {
     taken,
     openSecties,
@@ -187,5 +216,7 @@ export function useTaken() {
     toggleTaakVoltooid,
     verwijderTaak,
     toggleSectie,
+    prioriteerMetAI,
+    isPrioriteren,
   };
 }

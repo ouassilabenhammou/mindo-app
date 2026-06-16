@@ -9,6 +9,32 @@ export function bepaalSectie(prioriteit: Prioriteit | null): SectieId {
   return PRIORITEIT_NAAR_SECTIE[prioriteit];
 }
 
+export function sectieNaarPrioriteit(
+  sectie: SectieId,
+): Prioriteit | null {
+  switch (sectie) {
+    case "nu":
+      return "hoog";
+    case "straks":
+      return "gemiddeld";
+    case "later":
+      return "laag";
+    default:
+      return null;
+  }
+}
+
+export function prioriteitNaarDbWaarde(prioriteit: Prioriteit | null): number {
+  switch (prioriteit) {
+    case "hoog":
+      return 2;
+    case "gemiddeld":
+      return 1;
+    default:
+      return 0;
+  }
+}
+
 export function groepeerPerSectie(taken: Taak[]): Record<SectieId, Taak[]> {
   const gegroepeerd = Object.fromEntries(
     SECTIE_VOLGORDE.map((sectie) => [sectie, [] as Taak[]]),
