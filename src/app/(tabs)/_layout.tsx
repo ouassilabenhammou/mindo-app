@@ -6,7 +6,7 @@ export default function TabLayout() {
       <Tabs.Screen name="taken" options={{ title: "Taken" }} />
       <Tabs.Screen name="agenda" options={{ title: "Agenda" }} />
       <Tabs.Screen name="focusmodus" options={{ title: "Focus Modus" }} />
-      <Tabs.Screen name="voortgang" options={{ title: "Voortgang" }} />
+      <Tabs.Screen name="profiel" options={{ title: "Profiel" }} />
       <Tabs.Screen name="mindo" options={{ title: "Mindo" }} />
     </Tabs>
   );
