@@ -27,6 +27,13 @@
     },
     "android": {
       "package": "com.ouassila.mindo"
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "700c26ee-3be6-4125-bd96-251c4116c480"
+      }
+    },
+    "owner": "ouassila00"
   }
 }
