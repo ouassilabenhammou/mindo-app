@@ -38,5 +38,6 @@ export function rijNaarTaak(
       typeof rij.duration_minutes === "number" ? rij.duration_minutes : null,
     sectie: CATEGORY_NAAR_SECTIE[String(rij.category ?? "later")] ?? "later",
     completed: Boolean(rij.is_completed),
+    vervaldatum: rij.due_date ? String(rij.due_date) : null,
   };
 }

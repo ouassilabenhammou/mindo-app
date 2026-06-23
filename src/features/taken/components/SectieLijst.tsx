@@ -12,6 +12,7 @@ type SectieLijstProps = {
   onToggle: () => void;
   onToggleVoltooid: (id: number) => void;
   onVerwijder: (id: number) => void;
+  onBewerk: (taak: Taak) => void;
 };
 
 export default function SectieLijst({
@@ -21,6 +22,7 @@ export default function SectieLijst({
   onToggle,
   onToggleVoltooid,
   onVerwijder,
+  onBewerk,
 }: SectieLijstProps) {
   return (
     <View style={styles.container}>
@@ -42,6 +44,7 @@ export default function SectieLijst({
                 taak={taak}
                 onToggleVoltooid={onToggleVoltooid}
                 onVerwijder={onVerwijder}
+                onBewerk={onBewerk}
               />
             ))
           )}

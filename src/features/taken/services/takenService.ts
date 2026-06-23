@@ -16,12 +16,14 @@ export async function voegTaakToeAanDatabase({
   sectie,
   priority,
   durationMinutes,
+  dueDate,
 }: {
   userId: string;
   title: string;
   sectie: SectieId;
   priority: number;
   durationMinutes?: number | null;
+  dueDate?: string | null;
 }) {
   return supabase
     .from("tasks")
@@ -31,8 +33,38 @@ export async function voegTaakToeAanDatabase({
       category: SECTIE_NAAR_CATEGORY[sectie],
       priority,
       duration_minutes: durationMinutes ?? null,
+      due_date: dueDate ?? null,
       is_completed: false,
     })
+    .select()
+    .single();
+}
+
+export async function werkTaakBijInDatabase({
+  id,
+  title,
+  sectie,
+  priority,
+  durationMinutes,
+  dueDate,
+}: {
+  id: string;
+  title: string;
+  sectie: SectieId;
+  priority: number;
+  durationMinutes?: number | null;
+  dueDate?: string | null;
+}) {
+  return supabase
+    .from("tasks")
+    .update({
+      title,
+      category: SECTIE_NAAR_CATEGORY[sectie],
+      priority,
+      duration_minutes: durationMinutes ?? null,
+      due_date: dueDate ?? null,
+    })
+    .eq("id", id)
     .select()
     .single();
 }
@@ -40,17 +72,16 @@ export async function voegTaakToeAanDatabase({
 export async function updateTaakVoltooid({
   id,
   completed,
-  sectie,
 }: {
   id: string;
   completed: boolean;
-  sectie: SectieId;
 }) {
+  // De categorie blijft ongewijzigd zodat een taak bij het opnieuw
+  // activeren automatisch terugkeert naar zijn oorspronkelijke sectie.
   return supabase
     .from("tasks")
     .update({
       is_completed: completed,
-      category: SECTIE_NAAR_CATEGORY[sectie],
       completed_at: completed ? new Date().toISOString() : null,
     })
     .eq("id", id);

@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function Voortgang() {
+export default function Instellingen() {
   const { signOut } = useAuth();
   const insets = useSafeAreaInsets();
 
@@ -22,17 +22,15 @@ export default function Voortgang() {
   }
 
   return (
-    <View style={styles.container}>
-      <Pressable
-        style={[styles.uitlogKnop, { top: insets.top + 12 }]}
-        onPress={bevestigUitloggen}
-        accessibilityLabel="Uitloggen"
-        accessibilityRole="button"
-      >
-        <Text style={styles.uitlogIcoon}>⎋</Text>
+    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
+      <Pressable onPress={() => router.back()}>
+        <Text>terug</Text>
       </Pressable>
+      <Text style={styles.titel}>Instellingen</Text>
 
-      <Text style={styles.titel}>Voortgang</Text>
+      <Pressable style={styles.uitlogKnop} onPress={bevestigUitloggen}>
+        <Text style={styles.uitlogTekst}>Uitloggen</Text>
+      </Pressable>
     </View>
   );
 }
@@ -40,32 +38,23 @@ export default function Voortgang() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: 16,
   },
   titel: {
     fontSize: 28,
     fontWeight: "700",
-    paddingHorizontal: 16,
-    marginTop: 16,
+    marginBottom: 24,
   },
   uitlogKnop: {
-    position: "absolute",
-    right: 16,
-    zIndex: 1,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
     backgroundColor: "#4A6FD6",
+    borderRadius: 12,
+    paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
   },
-  uitlogIcoon: {
+  uitlogTekst: {
     color: "#FFF",
-    fontSize: 22,
-    fontWeight: "500",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
