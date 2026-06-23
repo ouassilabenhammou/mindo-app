@@ -1,9 +1,10 @@
 export type focusSchermProps = {
   remainingSeconds: number;
+  totaalSeconden: number;
   isPaused: boolean;
   onPause: () => void;
   onResume: () => void;
-
+  onStop: () => void;
   onMinutenChange: (minuten: number) => void;
 };
 
