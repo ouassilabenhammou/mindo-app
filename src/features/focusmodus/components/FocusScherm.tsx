@@ -1,9 +1,11 @@
 import { StatusBar } from "expo-status-bar";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { focusLayoutStyles } from "../styles/focusLayout";
 import CircularMinutePicker from "./MinutenKiezer";
 
 import type { focusSchermProps } from "@/features/focusmodus/types/focusmodus";
+import { colors, radius, spacing } from "@/theme";
 
 export default function FocusScherm({
   remainingSeconds,
@@ -14,6 +16,7 @@ export default function FocusScherm({
   onStop,
   onMinutenChange,
 }: focusSchermProps) {
+  const insets = useSafeAreaInsets();
   const boogMinuten = remainingSeconds / 60;
 
   const verstreken = Math.max(0, totaalSeconden - remainingSeconds);
@@ -23,7 +26,13 @@ export default function FocusScherm({
       : 0;
 
   return (
-    <View style={[focusLayoutStyles.container, styles.container]}>
+    <View
+      style={[
+        focusLayoutStyles.container,
+        styles.container,
+        { paddingTop: insets.top + spacing.md },
+      ]}
+    >
       <StatusBar style="light" />
       <Text style={[focusLayoutStyles.titel, styles.titel]}>Focus</Text>
 
@@ -81,79 +90,80 @@ export default function FocusScherm({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#0A0A0A",
+    backgroundColor: colors.darkBackground,
   },
   titel: {
-    color: "#FFFFFF",
+    color: colors.white,
   },
   statusPill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
     alignSelf: "flex-start",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-    backgroundColor: "#16210F",
+    paddingHorizontal: spacing.md,
+    paddingVertical: 7,
+    borderRadius: radius.pill,
+    backgroundColor: colors.darkSurface,
   },
   statusPillGepauzeerd: {
-    backgroundColor: "#2A2310",
+    backgroundColor: colors.darkSurface,
   },
   statusStip: {
     width: 8,
     height: 8,
-    borderRadius: 4,
-    backgroundColor: "#6FD66F",
+    borderRadius: radius.pill,
+    backgroundColor: colors.success,
   },
   statusStipGepauzeerd: {
-    backgroundColor: "#FFC94A",
+    backgroundColor: colors.warning,
   },
   statusTekst: {
-    color: "#E8E8E8",
+    color: "#E8E8EE",
     fontSize: 13,
     fontWeight: "600",
   },
   voortgangTekst: {
-    marginTop: 20,
+    marginTop: spacing.xl,
     fontSize: 15,
-    fontWeight: "500",
-    color: "#9AA8C7",
+    fontWeight: "600",
+    color: colors.accent,
   },
   uitleg: {
-    color: "#888",
+    color: "#9A9BAE",
     fontSize: 13,
     textAlign: "center",
-    marginBottom: 16,
-    paddingHorizontal: 16,
+    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.lg,
     lineHeight: 18,
   },
   knoppenRij: {
     flexDirection: "row",
-    gap: 12,
+    gap: spacing.md,
     alignSelf: "stretch",
   },
   pauzeKnop: {
     flex: 1,
-    paddingVertical: 15,
-    borderRadius: 28,
+    paddingVertical: 17,
+    borderRadius: radius.md,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#3A3A3A",
+    borderColor: colors.darkBorder,
+    backgroundColor: colors.darkSurface,
   },
   pauzeTekst: {
-    color: "#FFFFFF",
+    color: colors.white,
     fontSize: 16,
     fontWeight: "600",
   },
   voltooiKnop: {
     flex: 1,
-    paddingVertical: 15,
-    borderRadius: 28,
+    paddingVertical: 17,
+    borderRadius: radius.md,
     alignItems: "center",
-    backgroundColor: "#4A6FD6",
+    backgroundColor: colors.accent,
   },
   voltooiTekst: {
-    color: "#FFFFFF",
+    color: colors.white,
     fontSize: 16,
     fontWeight: "700",
   },

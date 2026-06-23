@@ -1,4 +1,6 @@
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+
+import { colors, radius, spacing, typography } from "@/theme";
 
 type SectieHeaderProps = {
   titel: string;
@@ -15,10 +17,13 @@ export default function SectieHeader({
 }: SectieHeaderProps) {
   return (
     <Pressable style={styles.header} onPress={onPress}>
-      <Text style={styles.titel}>
-        {titel} ({aantal})
-      </Text>
-      <Text style={styles.chevron}>{isOpen ? "▼" : "▶"}</Text>
+      <View style={styles.linkerkant}>
+        <Text style={styles.titel}>{titel}</Text>
+        <View style={styles.badge}>
+          <Text style={styles.badgeTekst}>{aantal}</Text>
+        </View>
+      </View>
+      <Text style={styles.chevron}>{isOpen ? "⌄" : "›"}</Text>
     </Pressable>
   );
 }
@@ -28,15 +33,34 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 4,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xs,
+  },
+  linkerkant: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
   },
   titel: {
-    fontSize: 17,
-    fontWeight: "600",
+    ...typography.sectionTitle,
+  },
+  badge: {
+    minWidth: 22,
+    height: 22,
+    paddingHorizontal: 7,
+    borderRadius: radius.pill,
+    backgroundColor: colors.secondary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeTekst: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: colors.textOnLavender,
   },
   chevron: {
-    fontSize: 12,
-    color: "#888",
+    fontSize: 18,
+    fontWeight: "700",
+    color: colors.textSubtle,
   },
 });

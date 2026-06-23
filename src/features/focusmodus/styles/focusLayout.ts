@@ -1,14 +1,16 @@
 import { StyleSheet } from "react-native";
 
+import { colors, spacing, typography } from "@/theme";
+
 export const focusLayoutStyles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing.xxl,
+    backgroundColor: colors.background,
   },
   titel: {
-    fontSize: 28,
-    fontWeight: "700",
-    marginBottom: 8,
+    ...typography.screenTitle,
+    marginBottom: spacing.sm,
   },
   timerWrapper: {
     flex: 1,
@@ -17,7 +19,7 @@ export const focusLayoutStyles = StyleSheet.create({
   },
   footer: {
     minHeight: 54,
-    marginBottom: 32,
+    marginBottom: spacing.xxxl,
     justifyContent: "center",
     alignItems: "center",
   },

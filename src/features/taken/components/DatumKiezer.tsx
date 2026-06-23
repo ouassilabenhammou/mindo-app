@@ -4,6 +4,8 @@ import isoWeek from "dayjs/plugin/isoWeek";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { colors, radius, spacing } from "@/theme";
+
 dayjs.locale("nl");
 dayjs.extend(isoWeek);
 
@@ -181,32 +183,32 @@ export default function DatumKiezer({ waarde, onChange }: DatumKiezerProps) {
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
-    paddingTop: 4,
+    gap: spacing.md,
+    paddingTop: spacing.xs,
   },
   snelRij: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: spacing.sm,
   },
   snelChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 18,
-    backgroundColor: "#EEF2FB",
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.pill,
+    backgroundColor: colors.secondary,
   },
   snelTekst: {
     fontSize: 13,
-    fontWeight: "600",
-    color: "#4A6FD6",
+    fontWeight: "700",
+    color: colors.textOnLavender,
   },
   wisChip: {
-    backgroundColor: "#FBECEC",
+    backgroundColor: colors.dangerSoft,
   },
   wisTekst: {
     fontSize: 13,
-    fontWeight: "600",
-    color: "#D94A4A",
+    fontWeight: "700",
+    color: colors.danger,
   },
   maandRij: {
     flexDirection: "row",
@@ -214,22 +216,22 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   navKnop: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: radius.sm,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#F1F1F1",
+    backgroundColor: colors.surfaceSoft,
   },
   navTekst: {
     fontSize: 22,
     lineHeight: 24,
-    color: "#333",
+    color: colors.text,
   },
   maandTitel: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#1A1A1A",
+    fontWeight: "700",
+    color: colors.text,
   },
   weekdagRij: {
     flexDirection: "row",
@@ -238,8 +240,8 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     fontSize: 12,
-    fontWeight: "600",
-    color: "#9A9A9A",
+    fontWeight: "700",
+    color: colors.textSubtle,
   },
   grid: {
     flexDirection: "row",
@@ -253,49 +255,50 @@ const styles = StyleSheet.create({
   dagBol: {
     width: 38,
     height: 38,
-    borderRadius: 19,
+    borderRadius: radius.pill,
     alignItems: "center",
     justifyContent: "center",
   },
   dagBolGeselecteerd: {
-    backgroundColor: "#4A6FD6",
+    backgroundColor: colors.accent,
   },
   dagTekst: {
     fontSize: 15,
-    color: "#1A1A1A",
+    color: colors.text,
   },
   dagBuitenMaand: {
-    color: "#CFCFCF",
+    color: colors.textSubtle,
+    opacity: 0.6,
   },
   dagVandaag: {
-    color: "#4A6FD6",
+    color: colors.accent,
     fontWeight: "700",
   },
   dagTekstGeselecteerd: {
-    color: "#FFF",
+    color: colors.white,
     fontWeight: "700",
   },
   tijdRij: {
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
   },
   tijdChip: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: 18,
-    backgroundColor: "#F1F1F1",
+    paddingVertical: 11,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceSoft,
     alignItems: "center",
   },
   tijdChipActief: {
-    backgroundColor: "#4A6FD6",
+    backgroundColor: colors.accent,
   },
   tijdTekst: {
     fontSize: 14,
-    fontWeight: "500",
-    color: "#333",
+    fontWeight: "600",
+    color: colors.textMuted,
   },
   tijdTekstActief: {
-    color: "#FFF",
-    fontWeight: "600",
+    color: colors.white,
+    fontWeight: "700",
   },
 });

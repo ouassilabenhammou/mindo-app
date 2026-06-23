@@ -1,4 +1,5 @@
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { colors, radius, spacing, typography } from "@/theme";
 import { router } from "expo-router";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,13 +23,22 @@ export default function Instellingen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
-      <Pressable onPress={() => router.back()}>
-        <Text>terug</Text>
+    <View style={[styles.container, { paddingTop: insets.top + spacing.md }]}>
+      <Pressable
+        style={styles.terugKnop}
+        onPress={() => router.back()}
+        accessibilityRole="button"
+        hitSlop={8}
+      >
+        <Text style={styles.terugTekst}>‹ Terug</Text>
       </Pressable>
       <Text style={styles.titel}>Instellingen</Text>
 
-      <Pressable style={styles.uitlogKnop} onPress={bevestigUitloggen}>
+      <Pressable
+        style={styles.uitlogKnop}
+        onPress={bevestigUitloggen}
+        accessibilityRole="button"
+      >
         <Text style={styles.uitlogTekst}>Uitloggen</Text>
       </Pressable>
     </View>
@@ -38,23 +48,33 @@ export default function Instellingen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.xl,
+  },
+  terugKnop: {
+    alignSelf: "flex-start",
+    paddingVertical: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  terugTekst: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: colors.textMuted,
   },
   titel: {
-    fontSize: 28,
-    fontWeight: "700",
-    marginBottom: 24,
+    ...typography.screenTitle,
+    marginBottom: spacing.xxl,
   },
   uitlogKnop: {
-    backgroundColor: "#4A6FD6",
-    borderRadius: 12,
-    paddingVertical: 14,
+    backgroundColor: colors.dangerSoft,
+    borderRadius: radius.md,
+    paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
   },
   uitlogTekst: {
-    color: "#FFF",
+    color: colors.danger,
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
   },
 });

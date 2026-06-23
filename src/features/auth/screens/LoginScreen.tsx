@@ -1,4 +1,5 @@
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { colors, radius, shadows, spacing, typography } from "@/theme";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -51,7 +52,7 @@ export default function LoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="Jouw naam"
-            placeholderTextColor="#999"
+            placeholderTextColor={colors.textSubtle}
             value={fullName}
             onChangeText={setFullName}
             autoCapitalize="words"
@@ -61,7 +62,7 @@ export default function LoginScreen() {
         <TextInput
           style={styles.input}
           placeholder="E-mailadres"
-          placeholderTextColor="#999"
+          placeholderTextColor={colors.textSubtle}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -72,7 +73,7 @@ export default function LoginScreen() {
         <TextInput
           style={styles.input}
           placeholder="Wachtwoord"
-          placeholderTextColor="#999"
+          placeholderTextColor={colors.textSubtle}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -110,72 +111,69 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: colors.background,
   },
   inner: {
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 28,
-    paddingBottom: 40,
+    paddingBottom: spacing.xxxl,
   },
   logo: {
-    fontSize: 40,
-    fontWeight: "700",
-    color: "#4A6FD6",
+    fontSize: 42,
+    fontWeight: "800",
+    color: colors.accent,
     textAlign: "center",
-    marginBottom: 32,
+    letterSpacing: -0.5,
+    marginBottom: spacing.xxxl,
   },
   title: {
+    ...typography.screenTitle,
     fontSize: 28,
-    fontWeight: "700",
-    color: "#1A1A2E",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   subtitle: {
     fontSize: 16,
-    color: "#666",
+    color: colors.textMuted,
     textAlign: "center",
-    marginBottom: 32,
+    marginBottom: spacing.xxxl,
   },
   input: {
-    backgroundColor: "#fff",
-    borderRadius: 14,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
     borderWidth: 1.5,
-    borderColor: "#E8E8F0",
+    borderColor: colors.border,
     paddingHorizontal: 18,
-    paddingVertical: 14,
+    paddingVertical: spacing.lg,
     fontSize: 16,
-    color: "#1A1A2E",
+    color: colors.text,
     marginBottom: 14,
   },
   button: {
-    backgroundColor: "#4A6FD6",
-    borderRadius: 14,
-    paddingVertical: 16,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
+    paddingVertical: 17,
     alignItems: "center",
-    marginTop: 8,
-    shadowColor: "#4A6FD6",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    marginTop: spacing.sm,
+    ...shadows.primary,
   },
   buttonDisabled: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
   buttonText: {
-    color: "#fff",
+    color: colors.white,
     fontSize: 17,
-    fontWeight: "600",
+    fontWeight: "700",
+    letterSpacing: 0.2,
   },
   switchMode: {
-    marginTop: 20,
+    marginTop: spacing.xl,
     alignItems: "center",
   },
   switchModeText: {
     fontSize: 15,
-    color: "#4A6FD6",
-    fontWeight: "500",
+    color: colors.accent,
+    fontWeight: "600",
   },
 });

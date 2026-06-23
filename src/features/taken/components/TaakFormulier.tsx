@@ -17,6 +17,7 @@ import {
   PRIORITEIT_LABELS,
 } from "@/features/taken/constants/taken";
 import type { Prioriteit } from "@/features/taken/types/taken";
+import { colors, radius, shadows, spacing, typography } from "@/theme";
 
 dayjs.locale("nl");
 
@@ -84,7 +85,7 @@ export default function TaakFormulier({
         value={tekst}
         onChangeText={onTekstChange}
         placeholder="Wat wil je doen?"
-        placeholderTextColor="#9A9A9A"
+        placeholderTextColor={colors.textSubtle}
         returnKeyType="done"
       />
 
@@ -216,90 +217,96 @@ export default function TaakFormulier({
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
+    gap: spacing.md,
   },
   titel: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1A1A1A",
+    ...typography.sectionTitle,
+    fontSize: 19,
   },
   input: {
-    paddingVertical: 12,
-    paddingHorizontal: 14,
+    paddingVertical: 14,
+    paddingHorizontal: spacing.lg,
     fontSize: 16,
-    backgroundColor: "#F6F6F6",
-    borderRadius: 12,
+    color: colors.text,
+    backgroundColor: colors.surfaceSoft,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   actieRij: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: spacing.sm,
   },
   keuzeKnop: {
-    paddingHorizontal: 14,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: "#F1F1F1",
+    paddingHorizontal: spacing.lg,
+    height: 40,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surfaceSoft,
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "transparent",
+    borderColor: colors.border,
   },
   keuzeKnopGevuld: {
-    backgroundColor: "#EEF2FB",
+    backgroundColor: colors.accentSoft,
+    borderColor: colors.accentSoft,
   },
   keuzeKnopActief: {
-    borderColor: "#4A6FD6",
+    borderColor: colors.accent,
   },
   keuzeTekst: {
     fontSize: 14,
-    color: "#333",
-    fontWeight: "500",
+    color: colors.textMuted,
+    fontWeight: "600",
   },
   keuzeTekstGevuld: {
-    color: "#4A6FD6",
-    fontWeight: "600",
+    color: colors.accent,
+    fontWeight: "700",
   },
   chips: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: spacing.sm,
   },
   chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: 20,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: 10,
+    borderRadius: radius.pill,
     borderWidth: 1,
-    borderColor: "#DDD",
-    backgroundColor: "#F8F8F8",
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceSoft,
   },
   chipActief: {
-    backgroundColor: "#4A6FD6",
-    borderColor: "#4A6FD6",
+    backgroundColor: colors.accent,
+    borderColor: colors.accent,
   },
   chipTekst: {
     fontSize: 14,
-    color: "#333",
+    fontWeight: "500",
+    color: colors.textMuted,
   },
   chipTekstActief: {
-    color: "#FFF",
-    fontWeight: "600",
+    color: colors.white,
+    fontWeight: "700",
   },
   datumPaneel: {
     maxHeight: 380,
   },
   opslaanKnop: {
-    marginTop: 4,
-    backgroundColor: "#4A6FD6",
-    borderRadius: 24,
-    paddingVertical: 15,
+    marginTop: spacing.xs,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
+    paddingVertical: 16,
     alignItems: "center",
+    ...shadows.primary,
   },
   opslaanKnopDisabled: {
-    opacity: 0.4,
+    opacity: 0.35,
   },
   opslaanTekst: {
-    color: "#FFF",
+    color: colors.white,
     fontSize: 16,
     fontWeight: "700",
+    letterSpacing: 0.2,
   },
 });

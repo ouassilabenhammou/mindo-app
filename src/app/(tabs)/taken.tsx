@@ -9,13 +9,16 @@ import {
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import TaakFormulier from "@/features/taken/components/TaakFormulier";
 import TodoLijst from "@/features/taken/components/TodoLijst";
 import { useTaken } from "@/features/taken/hooks/useTaken";
 import type { Taak } from "@/features/taken/types/taken";
+import { colors, radius, shadows, spacing, typography } from "@/theme";
 
 export default function TakenScreen() {
+  const insets = useSafeAreaInsets();
   const [formulierOpen, setFormulierOpen] = useState(false);
 
   const {
@@ -83,7 +86,7 @@ export default function TakenScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top + spacing.md }]}>
       <View style={styles.header}>
         <Text style={styles.title}>Taken</Text>
         <Pressable
@@ -160,61 +163,52 @@ export default function TakenScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    marginBottom: 16,
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.lg,
   },
   title: {
-    fontSize: 28,
-    fontWeight: "700",
+    ...typography.screenTitle,
   },
   prioriteerKnop: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#4A6FD6",
-    paddingHorizontal: 16,
+    backgroundColor: colors.secondary,
+    paddingHorizontal: spacing.lg,
     paddingVertical: 10,
-    borderRadius: 28,
+    borderRadius: radius.pill,
     gap: 6,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
   },
   prioriteerKnopDisabled: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
   prioriteerEmoji: {
     fontSize: 15,
   },
   prioriteerTekst: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#FFF",
+    fontWeight: "700",
+    color: colors.textOnLavender,
   },
   fab: {
     position: "absolute",
-    right: 20,
-    bottom: 24,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#4A6FD6",
+    right: spacing.xl,
+    bottom: spacing.xxl,
+    width: 62,
+    height: 62,
+    borderRadius: radius.xl,
+    backgroundColor: colors.accent,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 6,
+    ...shadows.accent,
   },
   fabTekst: {
-    color: "#FFF",
+    color: colors.white,
     fontSize: 34,
     fontWeight: "300",
     lineHeight: 38,
@@ -222,23 +216,23 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    backgroundColor: "rgba(27, 29, 42, 0.45)",
   },
   sheet: {
-    backgroundColor: "#FFF",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingHorizontal: 16,
-    paddingBottom: 32,
-    paddingTop: 10,
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: radius.xl,
+    borderTopRightRadius: radius.xl,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.xxxl,
+    paddingTop: spacing.md,
   },
   sheetGreep: {
     alignSelf: "center",
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "#DADADA",
-    marginBottom: 12,
+    width: 44,
+    height: 5,
+    borderRadius: radius.pill,
+    backgroundColor: colors.borderStrong,
+    marginBottom: spacing.lg,
   },
   keyboardView: {
     flex: 1,

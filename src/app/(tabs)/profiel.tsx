@@ -1,14 +1,26 @@
 import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { colors, radius, shadows, spacing, typography } from "@/theme";
 
 export default function Voortgang() {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.container}>
-      <View style={styles.instellingKnop}>
-        <Pressable onPress={() => router.push("/instellingen")}>
-          <Text>Instellingen</Text>
-        </Pressable>
-      </View>
+    <View
+      style={[styles.container, { paddingTop: insets.top + spacing.md }]}
+    >
+      <Text style={styles.titel}>Profiel</Text>
+
+      <Pressable
+        style={styles.rij}
+        onPress={() => router.push("/instellingen")}
+        accessibilityRole="button"
+      >
+        <Text style={styles.rijTekst}>Instellingen</Text>
+        <Text style={styles.chevron}>›</Text>
+      </Pressable>
     </View>
   );
 }
@@ -16,18 +28,31 @@ export default function Voortgang() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.xl,
   },
   titel: {
-    fontSize: 28,
-    fontWeight: "700",
-    paddingHorizontal: 16,
-    marginTop: 16,
+    ...typography.screenTitle,
+    marginBottom: spacing.xl,
   },
-  instellingKnop: {
-    position: "absolute",
-    right: 16,
-    zIndex: 1,
-    height: 44,
-    borderRadius: 22,
+  rij: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingVertical: 18,
+    paddingHorizontal: spacing.lg,
+    ...shadows.card,
+  },
+  rijTekst: {
+    ...typography.bodyStrong,
+  },
+  chevron: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: colors.textSubtle,
   },
 });

@@ -5,25 +5,25 @@ export const MIN_MINUTEN = 0;
 export const MAX_MINUTEN = 60;
 
 export const LICHT: Thema = {
-  ringAchtergrond: "#E8EEF8",
-  ringActief: "#4A6FD6",
-  tickActief: "#4A6FD6",
-  tickInactief: "#C5CEE0",
-  markerActief: "#4A6FD6",
-  markerInactief: "#888888",
+  ringAchtergrond: "#ECE7DA",
+  ringActief: "#F1619E",
+  tickActief: "#F1619E",
+  tickInactief: "#D8D2C4",
+  markerActief: "#F1619E",
+  markerInactief: "#9B9CAB",
   knopRand: "#FFFFFF",
-  centrumWaarde: "#1A1A1A",
-  centrumLabel: "#888888",
+  centrumWaarde: "#2B2D42",
+  centrumLabel: "#9B9CAB",
 };
 
 export const DONKER: Thema = {
-  ringAchtergrond: "#2A2A2A",
-  ringActief: "#4A6FD6",
-  tickActief: "#4A6FD6",
-  tickInactief: "#444444",
-  markerActief: "#4A6FD6",
-  markerInactief: "#666666",
-  knopRand: "#1A1A1A",
+  ringAchtergrond: "#262739",
+  ringActief: "#F1619E",
+  tickActief: "#F1619E",
+  tickInactief: "#3A3B50",
+  markerActief: "#F1619E",
+  markerInactief: "#6E6F80",
+  knopRand: "#1C1D2A",
   centrumWaarde: "#FFFFFF",
-  centrumLabel: "#666666",
+  centrumLabel: "#6E6F80",
 };

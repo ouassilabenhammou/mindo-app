@@ -58,6 +58,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sectiesContent: {
-    paddingBottom: 24,
+    paddingBottom: 110,
   },
 });

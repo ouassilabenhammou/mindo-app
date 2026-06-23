@@ -39,8 +39,8 @@ export const PRIORITEIT_LABELS: Record<Prioriteit, string> = {
 export const PRIORITEITEN: Prioriteit[] = ["hoog", "gemiddeld", "laag"];
 
 export const CATEGORY_KLEUREN: Record<string, string> = {
-  nu: "#FF6161",
-  straks: "#FFC94A",
+  nu: "#FF6B6B",
+  straks: "#F4B740",
   later: "#9F8FE8",
 };
 
