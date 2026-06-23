@@ -14,6 +14,7 @@ type TodoLijstProps = {
   onToggleSectie: (sectieId: SectieId) => void;
   onToggleTaakVoltooid: (id: number) => void;
   onVerwijderTaak: (id: number) => void;
+  onBewerkTaak: (taak: Taak) => void;
 };
 
 export default function TodoLijst({
@@ -22,6 +23,7 @@ export default function TodoLijst({
   onToggleSectie,
   onToggleTaakVoltooid,
   onVerwijderTaak,
+  onBewerkTaak,
 }: TodoLijstProps) {
   return (
     <View style={styles.container}>
@@ -39,6 +41,7 @@ export default function TodoLijst({
             onToggle={() => onToggleSectie(sectieId)}
             onToggleVoltooid={onToggleTaakVoltooid}
             onVerwijder={onVerwijderTaak}
+            onBewerk={onBewerkTaak}
           />
         ))}
       </ScrollView>
