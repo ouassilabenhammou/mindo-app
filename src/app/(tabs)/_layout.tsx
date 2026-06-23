@@ -1,9 +1,11 @@
-import { Tabs } from "expo-router";
+import { Tabs, useSegments } from "expo-router";
 import { SymbolView } from "expo-symbols";
+import { type ColorValue, StyleSheet, View } from "react-native";
 import type { SFSymbol } from "sf-symbols-typescript";
-import { type ColorValue, Platform, StyleSheet, View } from "react-native";
 
-import { colors, radius, shadows } from "@/theme";
+import FloatingTabBar from "@/features/navigation/components/FloatingTabBar";
+import MindoButton from "@/features/navigation/components/MindoButton";
+import { colors } from "@/theme";
 
 function TabIcon({ name, color }: { name: SFSymbol; color: ColorValue }) {
   return (
@@ -14,97 +16,82 @@ function TabIcon({ name, color }: { name: SFSymbol; color: ColorValue }) {
       weight="semibold"
       resizeMode="scaleAspectFit"
       fallback={
-        <View
-          style={[styles.fallbackDot, { backgroundColor: color }]}
-        />
+        <View style={[styles.fallbackDot, { backgroundColor: color }]} />
       }
     />
   );
 }
 
 export default function TabLayout() {
+  const segments = useSegments();
+  const actiefScherm = segments[segments.length - 1];
+  const toonMindoKnop = actiefScherm !== "mindo";
+
   return (
-    <Tabs
-      initialRouteName="taken"
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: colors.accent,
-        tabBarInactiveTintColor: colors.textSubtle,
-        tabBarShowLabel: true,
-        tabBarLabelStyle: styles.label,
-        tabBarItemStyle: styles.item,
-        tabBarStyle: styles.bar,
-      }}
-    >
-      <Tabs.Screen
-        name="taken"
-        options={{
-          title: "Taken",
-          tabBarIcon: ({ color }) => (
-            <TabIcon name="checklist" color={color} />
-          ),
+    <View style={styles.root}>
+      <Tabs
+        initialRouteName="taken"
+        tabBar={(props) => <FloatingTabBar {...props} />}
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: colors.accent,
+          tabBarInactiveTintColor: colors.textSubtle,
         }}
-      />
-      <Tabs.Screen
-        name="agenda"
-        options={{
-          title: "Agenda",
-          tabBarIcon: ({ color }) => (
-            <TabIcon name="calendar" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="focusmodus"
-        options={{
-          title: "Focus",
-          tabBarIcon: ({ color }) => (
-            <TabIcon name="timer" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profiel"
-        options={{
-          title: "Profiel",
-          tabBarIcon: ({ color }) => (
-            <TabIcon name="person.crop.circle" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="mindo"
-        options={{
-          title: "Mindo",
-          tabBarIcon: ({ color }) => (
-            <TabIcon name="sparkles" color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="taken"
+          options={{
+            title: "Taken",
+            tabBarIcon: ({ color }) => (
+              <TabIcon name="checklist" color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="agenda"
+          options={{
+            title: "Agenda",
+            tabBarIcon: ({ color }) => (
+              <TabIcon name="calendar" color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="focusmodus"
+          options={{
+            title: "Focus",
+            tabBarIcon: ({ color }) => <TabIcon name="timer" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="profiel"
+          options={{
+            title: "Profiel",
+            tabBarIcon: ({ color }) => (
+              <TabIcon name="person.crop.circle" color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="mindo"
+          options={{
+            title: "Mindo",
+            tabBarIcon: ({ color }) => (
+              <TabIcon name="sparkles" color={color} />
+            ),
+          }}
+        />
+      </Tabs>
+
+      {toonMindoKnop && <MindoButton />}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  bar: {
-    backgroundColor: colors.surface,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.border,
-    borderTopLeftRadius: radius.lg,
-    borderTopRightRadius: radius.lg,
-    height: Platform.OS === "ios" ? 88 : 70,
-    paddingTop: 10,
-    ...shadows.card,
-    shadowOffset: { width: 0, height: -6 },
-  },
-  item: {
-    paddingTop: 6,
-  },
-  label: {
-    fontSize: 11,
-    fontWeight: "600",
-    letterSpacing: 0.1,
-    marginTop: 2,
+  root: {
+    flex: 1,
+    backgroundColor: colors.background,
   },
   fallbackDot: {
     width: 22,
