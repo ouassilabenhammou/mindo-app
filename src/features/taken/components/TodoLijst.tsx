@@ -15,6 +15,7 @@ type TodoLijstProps = {
   onToggleTaakVoltooid: (id: number) => void;
   onVerwijderTaak: (id: number) => void;
   onBewerkTaak: (taak: Taak) => void;
+  bottomInset?: number;
 };
 
 export default function TodoLijst({
@@ -24,12 +25,16 @@ export default function TodoLijst({
   onToggleTaakVoltooid,
   onVerwijderTaak,
   onBewerkTaak,
+  bottomInset = 110,
 }: TodoLijstProps) {
   return (
     <View style={styles.container}>
       <ScrollView
         style={styles.secties}
-        contentContainerStyle={styles.sectiesContent}
+        contentContainerStyle={[
+          styles.sectiesContent,
+          { paddingBottom: bottomInset },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         {SECTIE_VOLGORDE.map((sectieId) => (

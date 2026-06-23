@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { focusLayoutStyles } from "../styles/focusLayout";
 import MinutenKiezer from "./MinutenKiezer";
 
+import { useTabBarSpace } from "@/features/navigation/constants";
 import type { focusStartProps } from "@/features/focusmodus/types/focusmodus";
 import { colors, radius, shadows, spacing } from "@/theme";
 
@@ -29,6 +30,7 @@ export default function FocusStartScherm({
   onStart,
 }: focusStartProps) {
   const insets = useSafeAreaInsets();
+  const tabBarSpace = useTabBarSpace();
   return (
     <View
       style={[focusLayoutStyles.container, { paddingTop: insets.top + spacing.md }]}
@@ -54,7 +56,7 @@ export default function FocusStartScherm({
         ))}
       </View>
 
-      <View style={focusLayoutStyles.footer}>
+      <View style={[focusLayoutStyles.footer, { marginBottom: tabBarSpace }]}>
         <Pressable
           style={[styles.startKnop, minuten === 0 && styles.startKnopDisabled]}
           onPress={onStart}

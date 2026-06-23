@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useTabBarSpace } from "@/features/navigation/constants";
 import TaakFormulier from "@/features/taken/components/TaakFormulier";
 import TodoLijst from "@/features/taken/components/TodoLijst";
 import { useTaken } from "@/features/taken/hooks/useTaken";
@@ -19,6 +20,7 @@ import { colors, radius, shadows, spacing, typography } from "@/theme";
 
 export default function TakenScreen() {
   const insets = useSafeAreaInsets();
+  const tabBarSpace = useTabBarSpace();
   const [formulierOpen, setFormulierOpen] = useState(false);
 
   const {
@@ -112,10 +114,11 @@ export default function TakenScreen() {
         onToggleTaakVoltooid={toggleTaakVoltooid}
         onVerwijderTaak={verwijderTaak}
         onBewerkTaak={openBewerken}
+        bottomInset={tabBarSpace + 76}
       />
 
       <Pressable
-        style={styles.fab}
+        style={[styles.fab, { bottom: tabBarSpace }]}
         onPress={openNieuweTaak}
         accessibilityRole="button"
         accessibilityLabel="Nieuwe taak toevoegen"
@@ -198,7 +201,6 @@ const styles = StyleSheet.create({
   fab: {
     position: "absolute",
     right: spacing.xl,
-    bottom: spacing.xxl,
     width: 62,
     height: 62,
     borderRadius: radius.xl,

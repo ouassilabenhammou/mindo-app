@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { focusLayoutStyles } from "../styles/focusLayout";
 import CircularMinutePicker from "./MinutenKiezer";
 
+import { useTabBarSpace } from "@/features/navigation/constants";
 import type { focusSchermProps } from "@/features/focusmodus/types/focusmodus";
 import { colors, radius, spacing } from "@/theme";
 
@@ -17,6 +18,7 @@ export default function FocusScherm({
   onMinutenChange,
 }: focusSchermProps) {
   const insets = useSafeAreaInsets();
+  const tabBarSpace = useTabBarSpace();
   const boogMinuten = remainingSeconds / 60;
 
   const verstreken = Math.max(0, totaalSeconden - remainingSeconds);
@@ -57,7 +59,7 @@ export default function FocusScherm({
         <Text style={styles.voortgangTekst}>{percentage}% voltooid</Text>
       </View>
 
-      <View style={focusLayoutStyles.footer}>
+      <View style={[focusLayoutStyles.footer, { marginBottom: tabBarSpace }]}>
         <Text style={styles.uitleg}>
           {isPaused
             ? "Tik op Hervat om verder te gaan, of Voltooien om af te ronden."
