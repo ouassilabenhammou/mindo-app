@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Text, View, useWindowDimensions } from "react-native";
 import { WeeklyCalendar } from "react-native-simple-weekly-calendar";
 
@@ -10,6 +10,7 @@ import { fetchCanvasDeadlines } from "@/features/canvas/services/canvas";
 import type { Deadline } from "@/features/canvas/types/canvas";
 import { CATEGORY_KLEUREN } from "@/features/taken/constants/taken";
 import { haalTakenMetVervaldatum } from "@/features/taken/services/takenService";
+import { supabase } from "@/lib/supabase";
 
 dayjs.locale("nl");
 dayjs.extend(isoWeek);
@@ -68,15 +69,7 @@ export default function WeekAgenda() {
     .isoWeekday(selectedWeekday)
     .format("YYYY-MM-DD");
 
-  useEffect(() => {
-    fetchCanvasDeadlines()
-      .then((response) => {
-        setDeadlines(response.deadlines);
-      })
-      .catch((error: Error) => {
-        console.log(error.message);
-      });
-
+  const laadTaken = useCallback(() => {
     haalTakenMetVervaldatum()
       .then(({ data, error }) => {
         if (error) {
@@ -90,6 +83,33 @@ export default function WeekAgenda() {
         console.log(error.message);
       });
   }, []);
+
+  useEffect(() => {
+    fetchCanvasDeadlines()
+      .then((response) => {
+        setDeadlines(response.deadlines);
+      })
+      .catch((error: Error) => {
+        console.log(error.message);
+      });
+
+    laadTaken();
+
+    // Houd de agenda automatisch up-to-date wanneer taken (met datum)
+    // worden toegevoegd, bewerkt, voltooid of verwijderd.
+    const channel = supabase
+      .channel("agenda-taken-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "tasks" },
+        laadTaken,
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [laadTaken]);
 
   const deadlinesVoorGeselecteerdeDag = deadlines.filter((deadline) =>
     hoortDeadlineBijDatum(deadline, activeDate),

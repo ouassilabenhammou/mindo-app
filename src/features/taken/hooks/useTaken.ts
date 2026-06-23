@@ -10,6 +10,7 @@ import {
   updateTaakVoltooid,
   verwijderTaakUitDatabase,
   voegTaakToeAanDatabase,
+  werkTaakBijInDatabase,
 } from "@/features/taken/services/takenService";
 import type {
   Prioriteit,
@@ -37,6 +38,10 @@ export function useTaken() {
   const [geselecteerdeDuur, setGeselecteerdeDuur] = useState<number | null>(
     null,
   );
+  const [geselecteerdeDatum, setGeselecteerdeDatum] = useState<Date | null>(
+    null,
+  );
+  const [bewerkTaakId, setBewerkTaakId] = useState<string | null>(null);
   const [isPrioriteren, setIsPrioriteren] = useState(false);
 
   const laadTaken = useCallback(async () => {
@@ -74,11 +79,49 @@ export function useTaken() {
     setTekst("");
     setGeselecteerdePrioriteit(null);
     setGeselecteerdeDuur(null);
+    setGeselecteerdeDatum(null);
+    setBewerkTaakId(null);
   }, []);
 
-  const voegTaakToe = useCallback(async () => {
+  const startBewerken = useCallback((taak: Taak) => {
+    setBewerkTaakId(taak._uuid);
+    setTekst(taak.text);
+    setGeselecteerdePrioriteit(taak.prioriteit);
+    setGeselecteerdeDuur(taak.duur);
+    setGeselecteerdeDatum(taak.vervaldatum ? new Date(taak.vervaldatum) : null);
+  }, []);
+
+  const slaTaakOp = useCallback(async () => {
     const trimmed = tekst.trim();
     if (!trimmed) return false;
+
+    const sectie = bepaalSectie(geselecteerdePrioriteit);
+    const priority = prioriteitNaarDbWaarde(geselecteerdePrioriteit);
+    const dueDate = geselecteerdeDatum
+      ? geselecteerdeDatum.toISOString()
+      : null;
+
+    if (bewerkTaakId) {
+      const { data, error } = await werkTaakBijInDatabase({
+        id: bewerkTaakId,
+        title: trimmed,
+        sectie,
+        priority,
+        durationMinutes: geselecteerdeDuur,
+        dueDate,
+      });
+
+      if (error) {
+        console.error("Taak bijwerken mislukt:", error.message);
+        return false;
+      }
+
+      setTaken((huidig) =>
+        huidig.map((t) => (t._uuid === bewerkTaakId ? rijNaarTaak(data) : t)),
+      );
+      resetFormulier();
+      return true;
+    }
 
     const {
       data: { user },
@@ -89,15 +132,13 @@ export function useTaken() {
       return false;
     }
 
-    const sectie = bepaalSectie(geselecteerdePrioriteit);
-    const priority = prioriteitNaarDbWaarde(geselecteerdePrioriteit);
-
     const { data, error } = await voegTaakToeAanDatabase({
       userId: user.id,
       title: trimmed,
       sectie,
       priority,
       durationMinutes: geselecteerdeDuur,
+      dueDate,
     });
 
     if (error) {
@@ -108,7 +149,14 @@ export function useTaken() {
     setTaken((huidig) => [...huidig, rijNaarTaak(data)]);
     resetFormulier();
     return true;
-  }, [tekst, geselecteerdePrioriteit, geselecteerdeDuur, resetFormulier]);
+  }, [
+    tekst,
+    geselecteerdePrioriteit,
+    geselecteerdeDuur,
+    geselecteerdeDatum,
+    bewerkTaakId,
+    resetFormulier,
+  ]);
 
   const toggleTaakVoltooid = useCallback(
     async (id: number) => {
@@ -116,9 +164,15 @@ export function useTaken() {
       if (!taak) return;
 
       const wordtVoltooid = !taak.completed;
-      const nieuweSectie = wordtVoltooid
-        ? "voltooid"
-        : bepaalSectie(taak.prioriteit);
+
+      // Bij heractiveren keert de taak terug naar zijn oorspronkelijke sectie.
+      // Voor oudere taken die nog letterlijk "voltooid" als sectie hadden,
+      // leiden we de sectie opnieuw af uit de prioriteit.
+      const herstelSectie =
+        taak.sectie === "voltooid"
+          ? bepaalSectie(taak.prioriteit)
+          : taak.sectie;
+      const nieuweSectie = wordtVoltooid ? taak.sectie : herstelSectie;
 
       setTaken((huidig) =>
         huidig.map((t) =>
@@ -131,7 +185,6 @@ export function useTaken() {
       const { error } = await updateTaakVoltooid({
         id: taak._uuid,
         completed: wordtVoltooid,
-        sectie: nieuweSectie,
       });
 
       if (error) {
@@ -209,9 +262,14 @@ export function useTaken() {
     setGeselecteerdePrioriteit,
     geselecteerdeDuur,
     setGeselecteerdeDuur,
+    geselecteerdeDatum,
+    setGeselecteerdeDatum,
+    bewerkTaakId,
+    isBewerken: bewerkTaakId !== null,
+    startBewerken,
     takenPerSectie,
     aantalPerSectie,
-    voegTaakToe,
+    slaTaakOp,
     resetFormulier,
     toggleTaakVoltooid,
     verwijderTaak,

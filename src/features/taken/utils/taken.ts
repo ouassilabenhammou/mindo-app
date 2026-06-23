@@ -35,13 +35,17 @@ export function prioriteitNaarDbWaarde(prioriteit: Prioriteit | null): number {
   }
 }
 
+export function zichtbareSectie(taak: Taak): SectieId {
+  return taak.completed ? "voltooid" : taak.sectie;
+}
+
 export function groepeerPerSectie(taken: Taak[]): Record<SectieId, Taak[]> {
   const gegroepeerd = Object.fromEntries(
     SECTIE_VOLGORDE.map((sectie) => [sectie, [] as Taak[]]),
   ) as Record<SectieId, Taak[]>;
 
   for (const taak of taken) {
-    gegroepeerd[taak.sectie].push(taak);
+    gegroepeerd[zichtbareSectie(taak)].push(taak);
   }
 
   return gegroepeerd;
@@ -53,7 +57,7 @@ export function telPerSectie(taken: Taak[]): Record<SectieId, number> {
   ) as Record<SectieId, number>;
 
   for (const taak of taken) {
-    aantallen[taak.sectie]++;
+    aantallen[zichtbareSectie(taak)]++;
   }
 
   return aantallen;

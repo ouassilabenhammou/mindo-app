@@ -10,6 +10,7 @@ export type Taak = {
   duur: number | null;
   sectie: SectieId;
   completed: boolean;
+  vervaldatum: string | null; // ISO-datum waarop de taak in de agenda verschijnt
 };
 
 export type SectieOpenState = Record<SectieId, boolean>;

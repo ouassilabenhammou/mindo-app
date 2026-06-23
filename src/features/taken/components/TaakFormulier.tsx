@@ -1,8 +1,26 @@
+import dayjs from "dayjs";
+import "dayjs/locale/nl";
 import { useEffect, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
-import { DUUR_OPTIES } from "@/features/taken/constants/taken";
+import DatumKiezer from "@/features/taken/components/DatumKiezer";
+import {
+  DUUR_OPTIES,
+  PRIORITEITEN,
+  PRIORITEIT_LABELS,
+} from "@/features/taken/constants/taken";
 import type { Prioriteit } from "@/features/taken/types/taken";
+
+dayjs.locale("nl");
+
+type Paneel = "prioriteit" | "duur" | "datum" | null;
 
 type TaakFormulierProps = {
   tekst: string;
@@ -11,7 +29,10 @@ type TaakFormulierProps = {
   onPrioriteitChange: (prioriteit: Prioriteit | null) => void;
   geselecteerdeDuur: number | null;
   onDuurChange: (duur: number | null) => void;
-  onToevoegen: () => void;
+  geselecteerdeDatum: Date | null;
+  onDatumChange: (datum: Date | null) => void;
+  onOpslaan: () => void;
+  isBewerken?: boolean;
 };
 
 export default function TaakFormulier({
@@ -21,97 +42,174 @@ export default function TaakFormulier({
   onPrioriteitChange,
   geselecteerdeDuur,
   onDuurChange,
-  onToevoegen,
+  geselecteerdeDatum,
+  onDatumChange,
+  onOpslaan,
+  isBewerken = false,
 }: TaakFormulierProps) {
-  const [toonDuurOpties, setToonDuurOpties] = useState(false);
-  const [toonPrioriteitOpties, setToonPrioriteitOpties] = useState(false);
-
-  const standaardDuur = DUUR_OPTIES[0];
-  const extraDuurOpties = DUUR_OPTIES.slice(1);
+  const [actiefPaneel, setActiefPaneel] = useState<Paneel>(null);
   const inputRef = useRef<TextInput>(null);
+
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
+  function wisselPaneel(paneel: Paneel) {
+    setActiefPaneel((huidig) => (huidig === paneel ? null : paneel));
+  }
+
+  const duurLabel = geselecteerdeDuur
+    ? DUUR_OPTIES.find((optie) => optie.value === geselecteerdeDuur)?.label
+    : "Duur";
+
+  const datumLabel = geselecteerdeDatum
+    ? dayjs(geselecteerdeDatum).format("D MMM")
+    : "Datum";
+
+  const prioriteitLabel = geselecteerdePrioriteit
+    ? PRIORITEIT_LABELS[geselecteerdePrioriteit]
+    : "Prioriteit";
+
+  const kanOpslaan = tekst.trim().length > 0;
+
   return (
     <View style={styles.container}>
+      <Text style={styles.titel}>
+        {isBewerken ? "Taak bewerken" : "Nieuwe taak"}
+      </Text>
+
       <TextInput
-        autoFocus
+        ref={inputRef}
         style={styles.input}
         value={tekst}
         onChangeText={onTekstChange}
-        placeholder="Nieuwe taak"
+        placeholder="Wat wil je doen?"
         placeholderTextColor="#9A9A9A"
-        onSubmitEditing={onToevoegen}
         returnKeyType="done"
       />
+
       <View style={styles.actieRij}>
         <Pressable
-          style={styles.lijstKnop}
-          onPress={() => setToonPrioriteitOpties(!toonPrioriteitOpties)}
+          style={[
+            styles.keuzeKnop,
+            geselecteerdePrioriteit !== null && styles.keuzeKnopGevuld,
+            actiefPaneel === "prioriteit" && styles.keuzeKnopActief,
+          ]}
+          onPress={() => wisselPaneel("prioriteit")}
         >
-          <Text style={styles.lijstTekst}>Taken</Text>
+          <Text
+            style={[
+              styles.keuzeTekst,
+              geselecteerdePrioriteit !== null && styles.keuzeTekstGevuld,
+            ]}
+          >
+            {prioriteitLabel}
+          </Text>
         </Pressable>
 
         <Pressable
           style={[
-            styles.duurKnop,
-            geselecteerdeDuur === standaardDuur.value && styles.chipActief,
+            styles.keuzeKnop,
+            geselecteerdeDuur !== null && styles.keuzeKnopGevuld,
+            actiefPaneel === "duur" && styles.keuzeKnopActief,
           ]}
-          onPress={() => {
-            onDuurChange(standaardDuur.value);
-            setToonDuurOpties(!toonDuurOpties);
-          }}
+          onPress={() => wisselPaneel("duur")}
         >
           <Text
             style={[
-              styles.duurTekst,
-              geselecteerdeDuur === standaardDuur.value &&
-                styles.chipTekstActief,
+              styles.keuzeTekst,
+              geselecteerdeDuur !== null && styles.keuzeTekstGevuld,
             ]}
           >
-            {geselecteerdeDuur
-              ? DUUR_OPTIES.find((optie) => optie.value === geselecteerdeDuur)
-                  ?.label
-              : standaardDuur.label}
+            {duurLabel}
           </Text>
         </Pressable>
 
-        <Pressable style={styles.icoonKnop}>
-          <Text style={styles.icoonTekst}>•••</Text>
-        </Pressable>
-
-        <Pressable style={styles.verstuurKnop} onPress={onToevoegen}>
-          <Text style={styles.verstuurTekst}>↑</Text>
+        <Pressable
+          style={[
+            styles.keuzeKnop,
+            geselecteerdeDatum !== null && styles.keuzeKnopGevuld,
+            actiefPaneel === "datum" && styles.keuzeKnopActief,
+          ]}
+          onPress={() => wisselPaneel("datum")}
+        >
+          <Text
+            style={[
+              styles.keuzeTekst,
+              geselecteerdeDatum !== null && styles.keuzeTekstGevuld,
+            ]}
+          >
+            {datumLabel}
+          </Text>
         </Pressable>
       </View>
 
-      {toonDuurOpties && (
+      {actiefPaneel === "prioriteit" && (
         <View style={styles.chips}>
-          {extraDuurOpties.map(({ value, label }) => (
-            <Pressable
-              key={value}
-              style={[
-                styles.chip,
-                geselecteerdeDuur === value && styles.chipActief,
-              ]}
-              onPress={() => {
-                onDuurChange(value);
-                setToonDuurOpties(false);
-              }}
-            >
-              <Text
-                style={[
-                  styles.chipTekst,
-                  geselecteerdeDuur === value && styles.chipTekstActief,
-                ]}
+          {PRIORITEITEN.map((prioriteit) => {
+            const isActief = geselecteerdePrioriteit === prioriteit;
+            return (
+              <Pressable
+                key={prioriteit}
+                style={[styles.chip, isActief && styles.chipActief]}
+                onPress={() =>
+                  onPrioriteitChange(isActief ? null : prioriteit)
+                }
               >
-                {label}
-              </Text>
-            </Pressable>
-          ))}
+                <Text
+                  style={[
+                    styles.chipTekst,
+                    isActief && styles.chipTekstActief,
+                  ]}
+                >
+                  {PRIORITEIT_LABELS[prioriteit]}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       )}
+
+      {actiefPaneel === "duur" && (
+        <View style={styles.chips}>
+          {DUUR_OPTIES.map(({ value, label }) => {
+            const isActief = geselecteerdeDuur === value;
+            return (
+              <Pressable
+                key={value}
+                style={[styles.chip, isActief && styles.chipActief]}
+                onPress={() => onDuurChange(isActief ? null : value)}
+              >
+                <Text
+                  style={[
+                    styles.chipTekst,
+                    isActief && styles.chipTekstActief,
+                  ]}
+                >
+                  {label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      )}
+
+      {actiefPaneel === "datum" && (
+        <ScrollView style={styles.datumPaneel} keyboardShouldPersistTaps="handled">
+          <DatumKiezer waarde={geselecteerdeDatum} onChange={onDatumChange} />
+        </ScrollView>
+      )}
+
+      <Pressable
+        style={[styles.opslaanKnop, !kanOpslaan && styles.opslaanKnopDisabled]}
+        onPress={onOpslaan}
+        disabled={!kanOpslaan}
+        accessibilityRole="button"
+      >
+        <Text style={styles.opslaanTekst}>
+          {isBewerken ? "Wijzigingen opslaan" : "Taak toevoegen"}
+        </Text>
+      </Pressable>
     </View>
   );
 }
@@ -120,64 +218,46 @@ const styles = StyleSheet.create({
   container: {
     gap: 12,
   },
+  titel: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1A1A1A",
+  },
   input: {
-    padding: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
     fontSize: 16,
+    backgroundColor: "#F6F6F6",
+    borderRadius: 12,
   },
   actieRij: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
-  lijstKnop: {
-    paddingHorizontal: 12,
-    height: 36,
-    borderRadius: 18,
+  keuzeKnop: {
+    paddingHorizontal: 14,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: "#F1F1F1",
     justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "transparent",
   },
-  lijstTekst: {
+  keuzeKnopGevuld: {
+    backgroundColor: "#EEF2FB",
+  },
+  keuzeKnopActief: {
+    borderColor: "#4A6FD6",
+  },
+  keuzeTekst: {
     fontSize: 14,
     color: "#333",
     fontWeight: "500",
   },
-  duurKnop: {
-    paddingHorizontal: 12,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#F1F1F1",
-    justifyContent: "center",
-  },
-  duurTekst: {
-    fontSize: 14,
-    color: "#333",
-  },
-  icoonKnop: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#F1F1F1",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  icoonTekst: {
-    fontSize: 18,
-    color: "#555",
-    lineHeight: 18,
-  },
-  verstuurKnop: {
-    marginLeft: "auto",
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#4A6FD6",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  verstuurTekst: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "700",
+  keuzeTekstGevuld: {
+    color: "#4A6FD6",
+    fontWeight: "600",
   },
   chips: {
     flexDirection: "row",
@@ -185,8 +265,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "#DDD",
@@ -203,5 +283,23 @@ const styles = StyleSheet.create({
   chipTekstActief: {
     color: "#FFF",
     fontWeight: "600",
+  },
+  datumPaneel: {
+    maxHeight: 380,
+  },
+  opslaanKnop: {
+    marginTop: 4,
+    backgroundColor: "#4A6FD6",
+    borderRadius: 24,
+    paddingVertical: 15,
+    alignItems: "center",
+  },
+  opslaanKnopDisabled: {
+    opacity: 0.4,
+  },
+  opslaanTekst: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "700",
   },
 });
