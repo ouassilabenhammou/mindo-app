@@ -1,3 +1,5 @@
+import { router } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -15,6 +17,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { braindumpNaarTaken } from "@/features/ai/services/mistral";
 import type { BraindumpTaak } from "@/features/ai/types/braindump";
 import { colors, radius, shadows, spacing, typography } from "@/theme";
+
+function sluitBraindump() {
+  if (router.canGoBack()) {
+    router.back();
+  } else {
+    router.replace("/taken");
+  }
+}
 
 type BraindumpBericht = {
   id: string;
@@ -48,7 +58,24 @@ export default function Mindo() {
       style={[styles.container, { paddingTop: insets.top }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <Text style={styles.titel}>Mindo</Text>
+      <View style={styles.kop}>
+        <Pressable
+          style={styles.sluitKnop}
+          onPress={sluitBraindump}
+          accessibilityRole="button"
+          accessibilityLabel="Braindump sluiten"
+          hitSlop={8}
+        >
+          <SymbolView
+            name="chevron.left"
+            size={18}
+            tintColor={colors.text}
+            weight="semibold"
+            fallback={<Text style={styles.sluitTeken}>‹</Text>}
+          />
+        </Pressable>
+        <Text style={styles.titel}>Mindo</Text>
+      </View>
       <Text style={styles.ondertitel}>
         Dump je gedachten, Mindo maakt er taken van.
       </Text>
@@ -110,10 +137,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  titel: {
-    ...typography.screenTitle,
+  kop: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
     paddingHorizontal: spacing.xl,
     marginTop: spacing.md,
+  },
+  sluitKnop: {
+    width: 38,
+    height: 38,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surfaceSoft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sluitTeken: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: colors.text,
+    lineHeight: 24,
+  },
+  titel: {
+    ...typography.screenTitle,
   },
   ondertitel: {
     ...typography.subtitle,
