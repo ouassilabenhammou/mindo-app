@@ -1,5 +1,6 @@
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { colors, radius, shadows, spacing, typography } from "@/theme";
+import { Image } from "expo-image";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -11,10 +12,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+const logo = require("../../../../assets/images/mindo-logo.png");
 type AuthMode = "login" | "signup";
 
 export default function LoginScreen() {
-  const { signIn, signUp, loading } = useAuth();
+  const { signIn, signUp, testLogin, loading } = useAuth();
 
   const [mode, setMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
@@ -30,13 +33,18 @@ export default function LoginScreen() {
     }
   };
 
+  const handleTestLogin = async () => {
+    await testLogin();
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
       <View style={styles.inner}>
-        <Text style={styles.logo}>Mindo</Text>
+        <Image source={logo} style={styles.logo} contentFit="contain" />
+        <Text style={styles.woordmerk}>Mindo</Text>
 
         <Text style={styles.title}>
           {mode === "login" ? "Welkom terug " : "Account aanmaken"}
@@ -94,6 +102,14 @@ export default function LoginScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
+          style={[styles.testButton, loading && styles.buttonDisabled]}
+          onPress={handleTestLogin}
+          disabled={loading}
+        >
+          <Text style={styles.testButtonText}>of testen met testaccount</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={styles.switchMode}
           onPress={() => setMode(mode === "login" ? "signup" : "login")}
         >
@@ -120,9 +136,15 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxxl,
   },
   logo: {
-    fontSize: 42,
+    width: 72,
+    height: 72,
+    alignSelf: "center",
+    marginBottom: spacing.sm,
+  },
+  woordmerk: {
+    fontSize: 24,
     fontWeight: "800",
-    color: colors.accent,
+    color: colors.text,
     textAlign: "center",
     letterSpacing: -0.5,
     marginBottom: spacing.xxxl,
@@ -164,6 +186,21 @@ const styles = StyleSheet.create({
   buttonText: {
     color: colors.white,
     fontSize: 17,
+    fontWeight: "700",
+    letterSpacing: 0.2,
+  },
+  testButton: {
+    backgroundColor: colors.secondarySoft,
+    borderRadius: radius.md,
+    borderWidth: 1.5,
+    borderColor: colors.secondary,
+    paddingVertical: 15,
+    alignItems: "center",
+    marginTop: spacing.md,
+  },
+  testButtonText: {
+    color: colors.textOnLavender,
+    fontSize: 15,
     fontWeight: "700",
     letterSpacing: 0.2,
   },
