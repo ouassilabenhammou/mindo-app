@@ -1,9 +1,13 @@
 import type { BottomTabBarProps } from "expo-router/build/react-navigation/bottom-tabs";
 import { BlurView } from "expo-blur";
+import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { colors, radius } from "@/theme";
+
+// iOS 26+ "Liquid Glass". Valt automatisch terug op de blur-variant elders.
+const LIQUID_GLASS = isLiquidGlassAvailable();
 import {
   MINDO_BUTTON_GAP,
   MINDO_BUTTON_SIZE,
@@ -51,24 +55,35 @@ export default function FloatingTabBar({
     >
       <View style={[styles.shadow, donker ? styles.shadowDonker : null]}>
         <View style={styles.clip}>
-          <BlurView
-            intensity={Platform.OS === "android" ? 40 : 60}
-            tint={donker ? "dark" : "light"}
-            style={StyleSheet.absoluteFill}
-          />
-          <View
-            style={[
-              StyleSheet.absoluteFill,
-              styles.tint,
-              donker ? styles.tintDonker : styles.tintLicht,
-            ]}
-          />
-          <View
-            style={[
-              styles.border,
-              donker ? styles.borderDonker : styles.borderLicht,
-            ]}
-          />
+          {LIQUID_GLASS ? (
+            <GlassView
+              style={StyleSheet.absoluteFill}
+              glassEffectStyle="regular"
+              colorScheme={donker ? "dark" : "light"}
+              isInteractive
+            />
+          ) : (
+            <>
+              <BlurView
+                intensity={Platform.OS === "android" ? 40 : 60}
+                tint={donker ? "dark" : "light"}
+                style={StyleSheet.absoluteFill}
+              />
+              <View
+                style={[
+                  StyleSheet.absoluteFill,
+                  styles.tint,
+                  donker ? styles.tintDonker : styles.tintLicht,
+                ]}
+              />
+              <View
+                style={[
+                  styles.border,
+                  donker ? styles.borderDonker : styles.borderLicht,
+                ]}
+              />
+            </>
+          )}
 
           <View style={styles.row}>
             {zichtbareRoutes.map((route) => {
@@ -169,7 +184,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
   },
   tintLicht: {
-    backgroundColor: "rgba(255, 252, 245, 0.55)",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
   },
   tintDonker: {
     backgroundColor: "rgba(28, 29, 42, 0.55)",
