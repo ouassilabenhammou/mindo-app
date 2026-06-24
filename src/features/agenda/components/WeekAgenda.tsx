@@ -26,7 +26,7 @@ type TaakMetVervaldatum = {
 };
 
 function kleurVoorCategory(category: string | null | undefined) {
-  return CATEGORY_KLEUREN[category ?? ""] ?? "#9F8FE8";
+  return CATEGORY_KLEUREN[category ?? ""] ?? "#7A68D6";
 }
 
 function hoortTaakBijDatum(taak: TaakMetVervaldatum, date: string) {

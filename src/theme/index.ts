@@ -8,17 +8,17 @@ import { Platform, type TextStyle, type ViewStyle } from "react-native";
  */
 
 export const colors = {
-  // Oppervlakken
-  background: "#FFFCF5",
+  // Oppervlakken — koele, rustige off-white i.p.v. warme beige.
+  background: "#F7F8FA",
   surface: "#FFFFFF",
-  surfaceSoft: "#F6F2E9",
+  surfaceSoft: "#EFF1F5",
   surfaceLavender: "#E8E3F7",
 
   // Merk
   primary: "#2B2D42",
   primarySoft: "#3A3D5C",
-  accent: "#F1619E",
-  accentSoft: "#FCE3EE",
+  accent: "#5B67C7",
+  accentSoft: "#E8EAF7",
   secondary: "#E8E3F7",
   secondarySoft: "#F2EFFA",
 
@@ -30,8 +30,8 @@ export const colors = {
   textOnLavender: "#4B3F86",
 
   // Lijnen
-  border: "#ECE6DA",
-  borderStrong: "#E0D9CC",
+  border: "#E6E9EF",
+  borderStrong: "#D6DBE3",
 
   // Status
   danger: "#E5484D",
@@ -87,9 +87,9 @@ export const shadows: Record<"card" | "raised" | "accent" | "primary", Shadow> =
     elevation: 5,
   },
   accent: {
-    shadowColor: "#F1619E",
+    shadowColor: "#5B67C7",
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.32,
+    shadowOpacity: 0.26,
     shadowRadius: 16,
     elevation: 8,
   },
