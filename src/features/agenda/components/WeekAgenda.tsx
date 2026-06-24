@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { WeeklyCalendar } from "react-native-simple-weekly-calendar";
 
 import { colors, radius, shadows, spacing, typography } from "@/theme";
@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/nl";
 import isoWeek from "dayjs/plugin/isoWeek";
 
+import MaandOverzicht from "@/features/agenda/components/MaandOverzicht";
 import { fetchCanvasDeadlines } from "@/features/canvas/services/canvas";
 import type { Deadline } from "@/features/canvas/types/canvas";
 import { CATEGORY_KLEUREN } from "@/features/taken/constants/taken";
@@ -63,6 +64,7 @@ export default function WeekAgenda() {
 
   const [deadlines, setDeadlines] = useState<Deadline[]>([]);
   const [taken, setTaken] = useState<TaakMetVervaldatum[]>([]);
+  const [maandOverzichtOpen, setMaandOverzichtOpen] = useState(false);
 
   const { width } = useWindowDimensions();
   const dayWidth = (width - 40) / 7;
@@ -121,6 +123,18 @@ export default function WeekAgenda() {
     hoortTaakBijDatum(taak, activeDate),
   );
 
+  const heeftItemsOpDatum = useCallback(
+    (date: string) =>
+      taken.some((taak) => hoortTaakBijDatum(taak, date)) ||
+      deadlines.some((deadline) => hoortDeadlineBijDatum(deadline, date)),
+    [taken, deadlines],
+  );
+
+  function selecteerDatum(date: string) {
+    setSelectedWeekday(dayjs(date).isoWeekday());
+    setVisibleWeekFirstDate(dayjs(date).startOf("isoWeek").format("YYYY-MM-DD"));
+  }
+
   return (
     <View>
       <WeeklyCalendar
@@ -153,7 +167,16 @@ export default function WeekAgenda() {
             <View style={styles.maandHeader}>
               <Text style={styles.dagNaam}>{dagNaamLabel}</Text>
 
-              <Text style={styles.maandLabel}>{maand.toUpperCase()}</Text>
+              <Pressable
+                style={styles.maandKnop}
+                onPress={() => setMaandOverzichtOpen(true)}
+                accessibilityRole="button"
+                accessibilityLabel="Maandoverzicht openen"
+                hitSlop={8}
+              >
+                <Text style={styles.maandLabel}>{maand.toUpperCase()}</Text>
+                <Text style={styles.maandKnopIcoon}>▾</Text>
+              </Pressable>
             </View>
           );
         }}
@@ -310,6 +333,14 @@ export default function WeekAgenda() {
           ))
         )}
       </View>
+
+      <MaandOverzicht
+        zichtbaar={maandOverzichtOpen}
+        geselecteerdeDatum={activeDate}
+        onSluit={() => setMaandOverzichtOpen(false)}
+        onSelecteerDatum={selecteerDatum}
+        heeftItemsOpDatum={heeftItemsOpDatum}
+      />
     </View>
   );
 }
@@ -325,11 +356,25 @@ const styles = StyleSheet.create({
     ...typography.screenTitle,
     fontSize: 26,
   },
+  maandKnop: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.pill,
+    backgroundColor: colors.accentSoft,
+  },
   maandLabel: {
-    color: colors.textMuted,
+    color: colors.accent,
     fontSize: 13,
     fontWeight: "700",
     letterSpacing: 1,
+  },
+  maandKnopIcoon: {
+    color: colors.accent,
+    fontSize: 11,
+    fontWeight: "700",
   },
   dagBol: {
     width: 56,

@@ -39,7 +39,11 @@ export default function DatumKiezer({ waarde, onChange }: DatumKiezerProps) {
   const eersteDag = zichtbareMaand.startOf("month").startOf("isoWeek");
   const dagen = Array.from({ length: 42 }, (_, i) => eersteDag.add(i, "day"));
 
+  // Datums in het verleden mogen niet gekozen worden.
+  const kanTerug = zichtbareMaand.isAfter(vandaag, "month");
+
   function kiesDag(dag: dayjs.Dayjs) {
+    if (dag.isBefore(vandaag, "day")) return;
     onChange(metTijd(dag, waarde));
   }
 
@@ -90,8 +94,11 @@ export default function DatumKiezer({ waarde, onChange }: DatumKiezerProps) {
 
       <View style={styles.maandRij}>
         <Pressable
-          style={styles.navKnop}
-          onPress={() => setZichtbareMaand((m) => m.subtract(1, "month"))}
+          style={[styles.navKnop, !kanTerug && styles.navKnopUit]}
+          onPress={() =>
+            kanTerug && setZichtbareMaand((m) => m.subtract(1, "month"))
+          }
+          disabled={!kanTerug}
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel="Vorige maand"
@@ -127,13 +134,16 @@ export default function DatumKiezer({ waarde, onChange }: DatumKiezerProps) {
           const inMaand = dag.month() === zichtbareMaand.month();
           const isGeselecteerd = geselecteerd?.isSame(dag, "day") ?? false;
           const isVandaag = dag.isSame(vandaag, "day");
+          const isVerleden = dag.isBefore(vandaag, "day");
 
           return (
             <Pressable
               key={dag.toISOString()}
               style={styles.dagCel}
               onPress={() => kiesDag(dag)}
+              disabled={isVerleden}
               accessibilityRole="button"
+              accessibilityState={{ disabled: isVerleden }}
               accessibilityLabel={dag.format("D MMMM YYYY")}
             >
               <View
@@ -148,6 +158,7 @@ export default function DatumKiezer({ waarde, onChange }: DatumKiezerProps) {
                     !inMaand && styles.dagBuitenMaand,
                     isVandaag && !isGeselecteerd && styles.dagVandaag,
                     isGeselecteerd && styles.dagTekstGeselecteerd,
+                    isVerleden && styles.dagVerleden,
                   ]}
                 >
                   {dag.format("D")}
@@ -223,6 +234,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: colors.surfaceSoft,
   },
+  navKnopUit: {
+    opacity: 0.35,
+  },
   navTekst: {
     fontSize: 22,
     lineHeight: 24,
@@ -269,6 +283,10 @@ const styles = StyleSheet.create({
   dagBuitenMaand: {
     color: colors.textSubtle,
     opacity: 0.6,
+  },
+  dagVerleden: {
+    color: colors.textSubtle,
+    opacity: 0.35,
   },
   dagVandaag: {
     color: colors.accent,
