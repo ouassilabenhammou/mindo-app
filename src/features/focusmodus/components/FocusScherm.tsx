@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { focusLayoutStyles } from "../styles/focusLayout";
+import { TIMER_SIZE, focusLayoutStyles } from "../styles/focusLayout";
 import CircularMinutePicker from "./MinutenKiezer";
 
 import { useTabBarSpace } from "@/features/navigation/constants";
@@ -36,36 +36,24 @@ export default function FocusScherm({
       ]}
     >
       <StatusBar style="light" />
-      <Text style={[focusLayoutStyles.titel, styles.titel]}>Focus</Text>
-
-      <View
-        style={[styles.statusPill, isPaused && styles.statusPillGepauzeerd]}
-      >
-        <View
-          style={[styles.statusStip, isPaused && styles.statusStipGepauzeerd]}
-        />
-        <Text style={styles.statusTekst}>
-          {isPaused ? "Gepauzeerd" : "Bezig met focussen"}
-        </Text>
+      <View style={focusLayoutStyles.kop}>
+        <Text style={[focusLayoutStyles.titel, styles.titel]}>Focus</Text>
       </View>
 
       <View style={focusLayoutStyles.timerWrapper}>
-        <CircularMinutePicker
-          minuten={boogMinuten}
-          resterendeSeconden={remainingSeconds}
-          onMinutenChange={onMinutenChange}
-          donker
-        />
-        <Text style={styles.voortgangTekst}>{percentage}% voltooid</Text>
+        <View style={focusLayoutStyles.ringBox}>
+          <CircularMinutePicker
+            minuten={boogMinuten}
+            size={TIMER_SIZE}
+            resterendeSeconden={remainingSeconds}
+            onMinutenChange={onMinutenChange}
+            donker
+          />
+          <Text style={styles.voortgangTekst}>{percentage}% voltooid</Text>
+        </View>
       </View>
 
       <View style={[focusLayoutStyles.footer, { marginBottom: tabBarSpace }]}>
-        <Text style={styles.uitleg}>
-          {isPaused
-            ? "Tik op Hervat om verder te gaan, of Voltooien om af te ronden."
-            : "Tik op Pauze om te onderbreken, of Voltooien om af te ronden."}
-        </Text>
-
         <View style={styles.knoppenRij}>
           <Pressable
             style={styles.pauzeKnop}
@@ -96,47 +84,18 @@ const styles = StyleSheet.create({
   },
   titel: {
     color: colors.white,
-  },
-  statusPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    alignSelf: "flex-start",
-    paddingHorizontal: spacing.md,
-    paddingVertical: 7,
-    borderRadius: radius.pill,
-    backgroundColor: colors.darkSurface,
-  },
-  statusPillGepauzeerd: {
-    backgroundColor: colors.darkSurface,
-  },
-  statusStip: {
-    width: 8,
-    height: 8,
-    borderRadius: radius.pill,
-    backgroundColor: colors.success,
-  },
-  statusStipGepauzeerd: {
-    backgroundColor: colors.warning,
-  },
-  statusTekst: {
-    color: "#E8E8EE",
-    fontSize: 13,
-    fontWeight: "600",
+    textAlign: "center",
   },
   voortgangTekst: {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    right: 0,
     marginTop: spacing.xl,
     fontSize: 15,
     fontWeight: "600",
     color: colors.accent,
-  },
-  uitleg: {
-    color: "#9A9BAE",
-    fontSize: 13,
     textAlign: "center",
-    marginBottom: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    lineHeight: 18,
   },
   knoppenRij: {
     flexDirection: "row",
