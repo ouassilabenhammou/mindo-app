@@ -13,6 +13,7 @@ import { fetchCanvasDeadlines } from "@/features/canvas/services/canvas";
 import type { Deadline } from "@/features/canvas/types/canvas";
 import { CATEGORY_KLEUREN } from "@/features/taken/constants/taken";
 import { haalTakenMetVervaldatum } from "@/features/taken/services/takenService";
+import { subscribeToTable } from "@/lib/realtime";
 import { supabase } from "@/lib/supabase";
 
 dayjs.locale("nl");
@@ -101,14 +102,7 @@ export default function WeekAgenda() {
 
     // Houd de agenda automatisch up-to-date wanneer taken (met datum)
     // worden toegevoegd, bewerkt, voltooid of verwijderd.
-    const channel = supabase
-      .channel("agenda-taken-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "tasks" },
-        laadTaken,
-      )
-      .subscribe();
+    const channel = subscribeToTable("tasks", laadTaken);
 
     return () => {
       supabase.removeChannel(channel);
