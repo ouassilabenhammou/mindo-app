@@ -1,11 +1,12 @@
 import { BlurView } from "expo-blur";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
 import { router } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { colors, radius, shadows, spacing, typography } from "@/theme";
+import { colors, radius, spacing, typography } from "@/theme";
 
 const LIQUID_GLASS = isLiquidGlassAvailable();
 
@@ -23,8 +24,6 @@ export default function Voortgang() {
       style={[styles.container, { paddingTop: insets.top + spacing.md }]}
     >
       <View style={styles.header}>
-        <Text style={styles.titel}>Profiel</Text>
-
         <View style={styles.naamSchaduw}>
           <View style={styles.naamClip}>
             {LIQUID_GLASS ? (
@@ -52,16 +51,49 @@ export default function Voortgang() {
             </View>
           </View>
         </View>
+
+        <View style={styles.naamSchaduw}>
+          <View style={styles.instellingenClip}>
+            {LIQUID_GLASS ? (
+              <GlassView
+                style={StyleSheet.absoluteFill}
+                glassEffectStyle="regular"
+                colorScheme="light"
+              />
+            ) : (
+              <>
+                <BlurView
+                  intensity={Platform.OS === "android" ? 40 : 60}
+                  tint="light"
+                  style={StyleSheet.absoluteFill}
+                />
+                <View style={[StyleSheet.absoluteFill, styles.naamTint]} />
+                <View style={styles.naamBorder} />
+              </>
+            )}
+
+            <Pressable
+              style={styles.instellingenKnop}
+              onPress={() => router.push("/instellingen")}
+              accessibilityRole="button"
+              accessibilityLabel="Instellingen"
+              hitSlop={8}
+            >
+              <SymbolView
+                name="gearshape"
+                size={22}
+                tintColor={colors.text}
+                weight="regular"
+                fallback={<Text style={styles.instellingenFallback}>⚙</Text>}
+              />
+            </Pressable>
+          </View>
+        </View>
       </View>
 
-      <Pressable
-        style={styles.rij}
-        onPress={() => router.push("/instellingen")}
-        accessibilityRole="button"
-      >
-        <Text style={styles.rijTekst}>Instellingen</Text>
-        <Text style={styles.chevron}>›</Text>
-      </Pressable>
+      <View style={styles.binnenkort}>
+        <Text style={styles.binnenkortTekst}>Binnenkort beschikbaar</Text>
+      </View>
     </View>
   );
 }
@@ -77,9 +109,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: spacing.xl,
-  },
-  titel: {
-    ...typography.screenTitle,
   },
   naamSchaduw: {
     borderRadius: radius.pill,
@@ -106,31 +135,35 @@ const styles = StyleSheet.create({
   naamInhoud: {
     paddingHorizontal: spacing.lg,
     paddingVertical: 10,
-    maxWidth: 200,
+    maxWidth: 240,
   },
   naamTekst: {
     fontSize: 15,
     fontWeight: "700",
     color: colors.text,
   },
-  rij: {
-    flexDirection: "row",
+  instellingenClip: {
+    borderRadius: radius.pill,
+    overflow: "hidden",
+    marginLeft: spacing.md,
+  },
+  instellingenKnop: {
+    width: 44,
+    height: 44,
     alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingVertical: 18,
-    paddingHorizontal: spacing.lg,
-    ...shadows.card,
+    justifyContent: "center",
   },
-  rijTekst: {
-    ...typography.bodyStrong,
+  instellingenFallback: {
+    fontSize: 20,
+    color: colors.text,
   },
-  chevron: {
-    fontSize: 22,
-    fontWeight: "700",
+  binnenkort: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  binnenkortTekst: {
+    ...typography.subtitle,
     color: colors.textSubtle,
   },
 });
