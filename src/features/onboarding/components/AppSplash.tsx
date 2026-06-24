@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { useEffect, useRef } from "react";
-import { Animated, Easing, StyleSheet, Text } from "react-native";
+import { Animated, Easing, StyleSheet } from "react-native";
 
 import { colors, spacing } from "@/theme";
 
@@ -76,7 +76,7 @@ export default function AppSplash({ onFinish }: AppSplashProps) {
         Mindo
       </Animated.Text>
       <Animated.Text style={[styles.slogan, { opacity: woordmerkOpacity }]}>
-        Rust in je hoofd
+        Overzicht • Rust • Focus
       </Animated.Text>
     </Animated.View>
   );
