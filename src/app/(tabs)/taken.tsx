@@ -1,3 +1,4 @@
+import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import {
   Alert,
@@ -100,7 +101,13 @@ export default function TakenScreen() {
           disabled={isPrioriteren}
           accessibilityRole="button"
         >
-          <Text style={styles.prioriteerEmoji}>✨</Text>
+          <SymbolView
+            name="sparkles"
+            size={16}
+            tintColor={colors.accent}
+            weight="semibold"
+            fallback={<Text style={styles.prioriteerEmoji}>✨</Text>}
+          />
           <Text style={styles.prioriteerTekst}>
             {isPrioriteren ? "Bezig…" : "Prioriteer met AI"}
           </Text>
@@ -129,7 +136,7 @@ export default function TakenScreen() {
       <Modal
         visible={formulierOpen}
         transparent
-        animationType="slide"
+        animationType="none"
         onRequestClose={sluitFormulier}
       >
         <KeyboardAvoidingView
@@ -181,7 +188,7 @@ const styles = StyleSheet.create({
   prioriteerKnop: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.accentSoft,
     paddingHorizontal: spacing.lg,
     paddingVertical: 10,
     borderRadius: radius.pill,
@@ -196,14 +203,14 @@ const styles = StyleSheet.create({
   prioriteerTekst: {
     fontSize: 14,
     fontWeight: "700",
-    color: colors.textOnLavender,
+    color: colors.accent,
   },
   fab: {
     position: "absolute",
     right: spacing.xl,
-    width: 62,
-    height: 62,
-    borderRadius: radius.xl,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
     backgroundColor: colors.accent,
     alignItems: "center",
     justifyContent: "center",
@@ -211,9 +218,10 @@ const styles = StyleSheet.create({
   },
   fabTekst: {
     color: colors.white,
-    fontSize: 34,
+    fontSize: 28,
     fontWeight: "300",
-    lineHeight: 38,
+    lineHeight: 30,
+    textAlign: "center",
   },
   overlay: {
     flex: 1,
