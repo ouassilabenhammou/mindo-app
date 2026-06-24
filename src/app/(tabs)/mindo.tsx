@@ -1,3 +1,5 @@
+import { router } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -14,6 +16,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { braindumpNaarTaken } from "@/features/ai/services/mistral";
 import type { BraindumpTaak } from "@/features/ai/types/braindump";
+import { colors, radius, shadows, spacing, typography } from "@/theme";
+
+function sluitBraindump() {
+  if (router.canGoBack()) {
+    router.back();
+  } else {
+    router.replace("/taken");
+  }
+}
 
 type BraindumpBericht = {
   id: string;
@@ -47,7 +58,27 @@ export default function Mindo() {
       style={[styles.container, { paddingTop: insets.top }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <Text style={styles.titel}>Mindo</Text>
+      <View style={styles.kop}>
+        <Pressable
+          style={styles.sluitKnop}
+          onPress={sluitBraindump}
+          accessibilityRole="button"
+          accessibilityLabel="Braindump sluiten"
+          hitSlop={8}
+        >
+          <SymbolView
+            name="chevron.left"
+            size={18}
+            tintColor={colors.text}
+            weight="semibold"
+            fallback={<Text style={styles.sluitTeken}>‹</Text>}
+          />
+        </Pressable>
+        <Text style={styles.titel}>Mindo</Text>
+      </View>
+      <Text style={styles.ondertitel}>
+        Dump je gedachten, Mindo maakt er taken van.
+      </Text>
 
       <ScrollView
         style={styles.berichten}
@@ -72,7 +103,7 @@ export default function Mindo() {
         ))}
 
         {isBezig && (
-          <ActivityIndicator style={styles.laden} color="#4A6FD6" />
+          <ActivityIndicator style={styles.laden} color={colors.accent} />
         )}
       </ScrollView>
 
@@ -82,7 +113,7 @@ export default function Mindo() {
           value={tekst}
           onChangeText={setTekst}
           placeholder="Typ je braindump..."
-          placeholderTextColor="#9A9A9A"
+          placeholderTextColor={colors.textSubtle}
           multiline
           editable={!isBezig}
         />
@@ -104,92 +135,126 @@ export default function Mindo() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background,
+  },
+  kop: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.md,
+  },
+  sluitKnop: {
+    width: 38,
+    height: 38,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surfaceSoft,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sluitTeken: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: colors.text,
+    lineHeight: 24,
   },
   titel: {
-    fontSize: 28,
-    fontWeight: "700",
-    paddingHorizontal: 16,
-    marginBottom: 12,
+    ...typography.screenTitle,
+  },
+  ondertitel: {
+    ...typography.subtitle,
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.xs,
+    marginBottom: spacing.lg,
   },
   berichten: {
     flex: 1,
   },
   berichtenInhoud: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    gap: 20,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.lg,
+    gap: spacing.xl,
   },
   ronde: {
-    gap: 8,
+    gap: spacing.sm,
   },
   gebruikerBubble: {
     alignSelf: "flex-end",
     maxWidth: "85%",
-    backgroundColor: "#E8EDFB",
-    borderRadius: 16,
-    borderBottomRightRadius: 4,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    backgroundColor: colors.primary,
+    borderRadius: radius.lg,
+    borderBottomRightRadius: 6,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
   },
   gebruikerTekst: {
     fontSize: 16,
-    color: "#1A1A1A",
+    color: colors.white,
   },
   taak: {
     alignSelf: "flex-start",
-    maxWidth: "85%",
-    backgroundColor: "#FFF",
+    maxWidth: "88%",
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: "#EEE",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    gap: 2,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderTopLeftRadius: 6,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    gap: 3,
+    ...shadows.card,
   },
   taakTitel: {
     fontSize: 16,
-    fontWeight: "500",
-    color: "#1A1A1A",
+    fontWeight: "600",
+    color: colors.text,
   },
   taakDatum: {
-    fontSize: 13,
-    color: "#888",
+    fontSize: 12,
+    fontWeight: "700",
+    color: colors.accent,
   },
   laden: {
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   invoer: {
     flexDirection: "row",
     alignItems: "flex-end",
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#EEE",
-    backgroundColor: "#FFF",
+    gap: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.border,
+    backgroundColor: colors.surface,
   },
   input: {
     flex: 1,
     maxHeight: 120,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     fontSize: 16,
-    backgroundColor: "#F5F5F5",
-    borderRadius: 20,
+    color: colors.text,
+    backgroundColor: colors.surfaceSoft,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   verstuurKnop: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#4A6FD6",
+    width: 42,
+    height: 42,
+    borderRadius: radius.pill,
+    backgroundColor: colors.accent,
     alignItems: "center",
     justifyContent: "center",
+    ...shadows.accent,
   },
   verstuurKnopDisabled: {
-    opacity: 0.4,
+    backgroundColor: colors.borderStrong,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   verstuurTekst: {
-    color: "#FFF",
+    color: colors.white,
     fontSize: 18,
     fontWeight: "700",
   },

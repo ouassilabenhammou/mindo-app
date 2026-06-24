@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
-import { Text, View, useWindowDimensions } from "react-native";
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { WeeklyCalendar } from "react-native-simple-weekly-calendar";
+
+import { colors, radius, shadows, spacing, typography } from "@/theme";
 
 import dayjs from "dayjs";
 import "dayjs/locale/nl";
 import isoWeek from "dayjs/plugin/isoWeek";
 
+import MaandOverzicht from "@/features/agenda/components/MaandOverzicht";
 import { fetchCanvasDeadlines } from "@/features/canvas/services/canvas";
 import type { Deadline } from "@/features/canvas/types/canvas";
 import { CATEGORY_KLEUREN } from "@/features/taken/constants/taken";
 import { haalTakenMetVervaldatum } from "@/features/taken/services/takenService";
+import { subscribeToTable } from "@/lib/realtime";
 import { supabase } from "@/lib/supabase";
 
 dayjs.locale("nl");
@@ -24,7 +28,7 @@ type TaakMetVervaldatum = {
 };
 
 function kleurVoorCategory(category: string | null | undefined) {
-  return CATEGORY_KLEUREN[category ?? ""] ?? "#9F8FE8";
+  return CATEGORY_KLEUREN[category ?? ""] ?? "#7A68D6";
 }
 
 function hoortTaakBijDatum(taak: TaakMetVervaldatum, date: string) {
@@ -61,6 +65,7 @@ export default function WeekAgenda() {
 
   const [deadlines, setDeadlines] = useState<Deadline[]>([]);
   const [taken, setTaken] = useState<TaakMetVervaldatum[]>([]);
+  const [maandOverzichtOpen, setMaandOverzichtOpen] = useState(false);
 
   const { width } = useWindowDimensions();
   const dayWidth = (width - 40) / 7;
@@ -97,14 +102,7 @@ export default function WeekAgenda() {
 
     // Houd de agenda automatisch up-to-date wanneer taken (met datum)
     // worden toegevoegd, bewerkt, voltooid of verwijderd.
-    const channel = supabase
-      .channel("agenda-taken-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "tasks" },
-        laadTaken,
-      )
-      .subscribe();
+    const channel = subscribeToTable("tasks", laadTaken);
 
     return () => {
       supabase.removeChannel(channel);
@@ -119,11 +117,23 @@ export default function WeekAgenda() {
     hoortTaakBijDatum(taak, activeDate),
   );
 
+  const heeftItemsOpDatum = useCallback(
+    (date: string) =>
+      taken.some((taak) => hoortTaakBijDatum(taak, date)) ||
+      deadlines.some((deadline) => hoortDeadlineBijDatum(deadline, date)),
+    [taken, deadlines],
+  );
+
+  function selecteerDatum(date: string) {
+    setSelectedWeekday(dayjs(date).isoWeekday());
+    setVisibleWeekFirstDate(dayjs(date).startOf("isoWeek").format("YYYY-MM-DD"));
+  }
+
   return (
     <View>
       <WeeklyCalendar
         dayHeaderComponent={() => null}
-        monthComponent={({ weekFirstDate, theme }) => {
+        monthComponent={({ weekFirstDate }) => {
           const zichtbareWeekStart = dayjs(weekFirstDate)
             .startOf("isoWeek")
             .format("YYYY-MM-DD");
@@ -148,31 +158,26 @@ export default function WeekAgenda() {
           }).format(new Date(selectedDateInCurrentWeek));
 
           return (
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "flex-end",
-                width: "100%",
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 24,
-                  fontWeight: "600",
-                  color: theme.monthTextColor,
-                }}
-              >
-                {dagNaamLabel}
-              </Text>
+            <View style={styles.maandHeader}>
+              <Text style={styles.dagNaam}>{dagNaamLabel}</Text>
 
-              <Text style={{ color: theme.monthTextColor, fontSize: 14 }}>
-                {maand.toUpperCase()}
-              </Text>
+              <Pressable
+                style={styles.maandKnop}
+                onPress={() => setMaandOverzichtOpen(true)}
+                accessibilityRole="button"
+                accessibilityLabel="Maandoverzicht openen"
+                hitSlop={8}
+              >
+                <Text style={styles.maandLabel}>{maand.toUpperCase()}</Text>
+                <Text style={styles.maandKnopIcoon}>▾</Text>
+              </Pressable>
             </View>
           );
         }}
-        theme={{ calendarBackgroundColor: "transparent" }}
+        theme={{
+          calendarBackgroundColor: "transparent",
+          monthTextColor: colors.text,
+        }}
         initialDate={vandaag}
         markedDays={[{ date: vandaag }]}
         nextComponent={() => <View />}
@@ -202,70 +207,56 @@ export default function WeekAgenda() {
           const heeftItems =
             deadlinesVoorDezeDag.length > 0 || takenVoorDezeDag.length > 0;
 
+          const tekstKleur = isSelected
+            ? colors.white
+            : isVandaag
+              ? colors.accent
+              : colors.textMuted;
+
           return (
             <View style={{ width: dayWidth - 8, alignItems: "center" }}>
               <View
-                style={{
-                  backgroundColor: isSelected ? "lightgrey" : "transparent",
-                  width: 65,
-                  height: 65,
-                  borderRadius: 12,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                style={[
+                  styles.dagBol,
+                  isSelected && styles.dagBolGeselecteerd,
+                  isVandaag && !isSelected && styles.dagBolVandaag,
+                ]}
               >
-                <View
-                  style={{
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 4,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      color: isSelected ? "black" : isVandaag ? "blue" : "grey",
-                    }}
-                  >
+                <View style={styles.dagInhoud}>
+                  <Text style={[styles.dagNaamKlein, { color: tekstKleur }]}>
                     {dagLabel}
                   </Text>
 
-                  <Text
-                    style={{
-                      fontSize: 22,
-                      color: isSelected ? "black" : isVandaag ? "blue" : "grey",
-                    }}
-                  >
+                  <Text style={[styles.dagNummer, { color: tekstKleur }]}>
                     {dayjs(date).format("D")}
                   </Text>
 
                   {heeftItems && (
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        gap: 3,
-                      }}
-                    >
+                    <View style={styles.stippen}>
                       {takenVoorDezeDag.length > 0 && (
                         <View
-                          style={{
-                            width: 6,
-                            height: 6,
-                            borderRadius: 3,
-                            backgroundColor: kleurVoorCategory(
-                              takenVoorDezeDag[0].category,
-                            ),
-                          }}
+                          style={[
+                            styles.stip,
+                            {
+                              backgroundColor: isSelected
+                                ? colors.white
+                                : kleurVoorCategory(
+                                    takenVoorDezeDag[0].category,
+                                  ),
+                            },
+                          ]}
                         />
                       )}
                       {deadlinesVoorDezeDag.length > 0 && (
                         <View
-                          style={{
-                            width: 6,
-                            height: 6,
-                            borderRadius: 3,
-                            backgroundColor: "red",
-                          }}
+                          style={[
+                            styles.stip,
+                            {
+                              backgroundColor: isSelected
+                                ? colors.white
+                                : colors.danger,
+                            },
+                          ]}
                         />
                       )}
                     </View>
@@ -277,59 +268,187 @@ export default function WeekAgenda() {
         }}
       />
 
-      <View>
+      <View style={styles.lijst}>
         {takenVoorGeselecteerdeDag.map((taak) => (
           <View
             key={taak.id}
-            style={{
-              marginBottom: 12,
-              padding: 12,
-              borderRadius: 12,
-              backgroundColor: kleurVoorCategory(taak.category),
-            }}
+            style={[
+              styles.taakKaart,
+              { borderLeftColor: kleurVoorCategory(taak.category) },
+            ]}
           >
-            <Text style={{ fontWeight: "600", fontSize: 16, color: "#FFF" }}>
-              {taak.title}
-            </Text>
-            <Text style={{ marginTop: 4, color: "#FFF" }}>
-              {dayjs(taak.due_date).format("HH:mm")}
-            </Text>
+            <View
+              style={[
+                styles.kaartStip,
+                { backgroundColor: kleurVoorCategory(taak.category) },
+              ]}
+            />
+            <View style={styles.kaartInhoud}>
+              <Text style={styles.kaartTitel}>{taak.title}</Text>
+              <Text style={styles.kaartTijd}>
+                {dayjs(taak.due_date).format("HH:mm")}
+              </Text>
+            </View>
           </View>
         ))}
 
         {deadlinesVoorGeselecteerdeDag.length === 0 &&
         takenVoorGeselecteerdeDag.length === 0 ? (
-          <Text style={{ color: "grey" }}>
-            Geen taken of Canvas-deadlines voor deze dag.
-          </Text>
+          <View style={styles.leegKaart}>
+            <Text style={styles.leegTekst}>
+              Geen taken of Canvas-deadlines voor deze dag.
+            </Text>
+          </View>
         ) : (
-          deadlinesVoorGeselecteerdeDag.map((deadline) => {
-            const isVerlopen = deadline.overdue && !deadline.submitted;
-
-            return (
+          deadlinesVoorGeselecteerdeDag.map((deadline) => (
+            <View
+              key={deadline.id}
+              style={[
+                styles.taakKaart,
+                { borderLeftColor: colors.danger },
+              ]}
+            >
               <View
-                key={deadline.id}
-                style={{
-                  marginBottom: 12,
-                  padding: 12,
-                  borderRadius: 12,
-                  backgroundColor: "lightgrey",
-                }}
-              >
-                <Text style={{ fontWeight: "600", fontSize: 16 }}>
-                  {deadline.title}
-                </Text>
+                style={[
+                  styles.kaartStip,
+                  { backgroundColor: colors.danger },
+                ]}
+              />
+              <View style={styles.kaartInhoud}>
+                <Text style={styles.kaartTitel}>{deadline.title}</Text>
 
                 {deadline.due_at && (
-                  <Text style={{ marginTop: 4 }}>
+                  <Text style={styles.kaartTijd}>
                     {dayjs(deadline.due_at).format("HH:mm")}
                   </Text>
                 )}
               </View>
-            );
-          })
+            </View>
+          ))
         )}
       </View>
+
+      <MaandOverzicht
+        zichtbaar={maandOverzichtOpen}
+        geselecteerdeDatum={activeDate}
+        onSluit={() => setMaandOverzichtOpen(false)}
+        onSelecteerDatum={selecteerDatum}
+        heeftItemsOpDatum={heeftItemsOpDatum}
+      />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  maandHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    width: "100%",
+  },
+  dagNaam: {
+    ...typography.screenTitle,
+    fontSize: 26,
+  },
+  maandKnop: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.pill,
+    backgroundColor: colors.accentSoft,
+  },
+  maandLabel: {
+    color: colors.accent,
+    fontSize: 13,
+    fontWeight: "700",
+    letterSpacing: 1,
+  },
+  maandKnopIcoon: {
+    color: colors.accent,
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  dagBol: {
+    width: 56,
+    height: 72,
+    borderRadius: radius.md,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+  },
+  dagBolGeselecteerd: {
+    backgroundColor: colors.primary,
+  },
+  dagBolVandaag: {
+    backgroundColor: colors.accentSoft,
+  },
+  dagInhoud: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.xs,
+  },
+  dagNaamKlein: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  dagNummer: {
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  stippen: {
+    flexDirection: "row",
+    gap: 3,
+  },
+  stip: {
+    width: 6,
+    height: 6,
+    borderRadius: radius.pill,
+  },
+  lijst: {
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
+    gap: spacing.md,
+  },
+  taakKaart: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.md,
+    backgroundColor: colors.surface,
+    borderLeftWidth: 4,
+    ...shadows.card,
+  },
+  kaartStip: {
+    width: 10,
+    height: 10,
+    borderRadius: radius.pill,
+  },
+  kaartInhoud: {
+    flex: 1,
+  },
+  kaartTitel: {
+    ...typography.bodyStrong,
+  },
+  kaartTijd: {
+    marginTop: 2,
+    fontSize: 13,
+    fontWeight: "500",
+    color: colors.textMuted,
+  },
+  leegKaart: {
+    paddingVertical: spacing.xxl,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.md,
+    backgroundColor: colors.surfaceSoft,
+    alignItems: "center",
+  },
+  leegTekst: {
+    color: colors.textMuted,
+    fontSize: 14,
+    textAlign: "center",
+  },
+});

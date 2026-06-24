@@ -20,10 +20,10 @@ export default function FocusTimer({
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference * (1 - progress);
 
-  const achtergrondKleur = donker ? "#2A2A2A" : "#E8EEF8";
-  const voortgangKleur = "#4A6FD6";
-  const tekstKleur = donker ? "#FFFFFF" : "#1A1A1A";
-  const subtekstKleur = donker ? "#888888" : "#888888";
+  const achtergrondKleur = donker ? "#262739" : "#E6E9EF";
+  const voortgangKleur = "#5B67C7";
+  const tekstKleur = donker ? "#FFFFFF" : "#2B2D42";
+  const subtekstKleur = donker ? "#6E6F80" : "#9B9CAB";
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>

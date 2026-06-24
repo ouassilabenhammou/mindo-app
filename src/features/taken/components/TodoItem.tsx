@@ -4,6 +4,7 @@ import Checkbox from "expo-checkbox";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import type { Taak } from "@/features/taken/types/taken";
+import { colors, radius, shadows, spacing } from "@/theme";
 
 dayjs.locale("nl");
 
@@ -25,9 +26,10 @@ export default function TodoItem({
   return (
     <View style={styles.item}>
       <Checkbox
+        style={styles.checkbox}
         value={taak.completed}
         onValueChange={() => onToggleVoltooid(taak.id)}
-        color={taak.completed ? "#4A6FD6" : undefined}
+        color={taak.completed ? colors.accent : undefined}
       />
 
       <Pressable
@@ -70,49 +72,70 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
-    padding: 12,
+    gap: spacing.md,
+    paddingVertical: 14,
+    paddingHorizontal: spacing.lg,
     borderWidth: 1,
-    borderColor: "#EEE",
-    borderRadius: 12,
-    backgroundColor: "#FFF",
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    backgroundColor: colors.surface,
+    ...shadows.card,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 7,
+    borderColor: colors.borderStrong,
   },
   content: {
     flex: 1,
-    gap: 4,
+    gap: spacing.xs,
   },
   text: {
     fontSize: 16,
-    color: "#1A1A1A",
+    fontWeight: "500",
+    color: colors.text,
   },
   metaRij: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: spacing.sm,
+    flexWrap: "wrap",
   },
   datum: {
-    fontSize: 13,
-    color: "#4A6FD6",
-    fontWeight: "500",
+    fontSize: 12,
+    color: colors.accent,
+    fontWeight: "700",
+    backgroundColor: colors.accentSoft,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radius.sm,
+    overflow: "hidden",
   },
   duur: {
-    fontSize: 13,
-    color: "#888",
+    fontSize: 12,
+    color: colors.textOnLavender,
+    fontWeight: "600",
+    backgroundColor: colors.secondary,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radius.sm,
+    overflow: "hidden",
   },
   completed: {
     textDecorationLine: "line-through",
-    color: "#999",
+    color: colors.textSubtle,
   },
   deleteKnop: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 30,
+    height: 30,
+    borderRadius: radius.sm,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FBECEC",
+    backgroundColor: colors.dangerSoft,
   },
   delete: {
-    color: "#D94A4A",
+    color: colors.danger,
     fontWeight: "700",
     fontSize: 13,
   },

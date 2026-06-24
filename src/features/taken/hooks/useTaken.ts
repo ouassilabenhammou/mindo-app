@@ -25,6 +25,7 @@ import {
   telPerSectie,
 } from "@/features/taken/utils/taken";
 import { rijNaarTaak } from "@/features/taken/utils/takenMapper";
+import { subscribeToTable } from "@/lib/realtime";
 import { supabase } from "@/lib/supabase";
 
 export function useTaken() {
@@ -58,14 +59,7 @@ export function useTaken() {
   useEffect(() => {
     laadTaken();
 
-    const channel = supabase
-      .channel("taken-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "tasks" },
-        laadTaken,
-      )
-      .subscribe();
+    const channel = subscribeToTable("tasks", laadTaken);
 
     return () => {
       supabase.removeChannel(channel);

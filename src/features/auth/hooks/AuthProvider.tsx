@@ -89,9 +89,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) Alert.alert("Uitloggen mislukt", error.message);
   };
 
+  const testLogin = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke<{
+        access_token: string;
+        refresh_token: string;
+      }>("test-login", { method: "POST" });
+      if (error) throw error;
+      if (!data?.access_token || !data?.refresh_token) {
+        throw new Error("Geen geldige sessie ontvangen van de testaccount.");
+      }
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+      });
+      if (sessionError) throw sessionError;
+    } catch (error: unknown) {
+      Alert.alert(
+        "Testaccount inloggen mislukt",
+        error instanceof Error ? error.message : "Onbekende fout",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ session, user, loading, signIn, signUp, signOut }}
+      value={{ session, user, loading, signIn, signUp, signOut, testLogin }}
     >
       {children}
     </AuthContext.Provider>

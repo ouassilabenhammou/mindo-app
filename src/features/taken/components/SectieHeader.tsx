@@ -1,10 +1,14 @@
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+
+import { colors, radius, spacing, typography } from "@/theme";
 
 type SectieHeaderProps = {
   titel: string;
   aantal: number;
   isOpen: boolean;
   onPress: () => void;
+  kleurSterk: string;
+  kleurZacht: string;
 };
 
 export default function SectieHeader({
@@ -12,13 +16,21 @@ export default function SectieHeader({
   aantal,
   isOpen,
   onPress,
+  kleurSterk,
+  kleurZacht,
 }: SectieHeaderProps) {
   return (
     <Pressable style={styles.header} onPress={onPress}>
-      <Text style={styles.titel}>
-        {titel} ({aantal})
-      </Text>
-      <Text style={styles.chevron}>{isOpen ? "▼" : "▶"}</Text>
+      <View style={styles.linkerkant}>
+        <View style={[styles.label, { backgroundColor: kleurZacht }]}>
+          <View style={[styles.stip, { backgroundColor: kleurSterk }]} />
+          <Text style={[styles.titel, { color: kleurSterk }]}>{titel}</Text>
+        </View>
+        <View style={[styles.badge, { backgroundColor: kleurSterk }]}>
+          <Text style={styles.badgeTekst}>{aantal}</Text>
+        </View>
+      </View>
+      <Text style={styles.chevron}>{isOpen ? "⌄" : "›"}</Text>
     </Pressable>
   );
 }
@@ -28,15 +40,47 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 4,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xs,
+  },
+  linkerkant: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+  },
+  label: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: radius.pill,
+  },
+  stip: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   titel: {
-    fontSize: 17,
-    fontWeight: "600",
+    ...typography.sectionTitle,
+    fontSize: 15,
+  },
+  badge: {
+    minWidth: 22,
+    height: 22,
+    paddingHorizontal: 7,
+    borderRadius: radius.pill,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeTekst: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: colors.white,
   },
   chevron: {
-    fontSize: 12,
-    color: "#888",
+    fontSize: 18,
+    fontWeight: "700",
+    color: colors.textSubtle,
   },
 });
