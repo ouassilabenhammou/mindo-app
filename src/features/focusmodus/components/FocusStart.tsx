@@ -16,6 +16,7 @@ import {
 } from "@/features/focusmodus/storage";
 import { useTabBarSpace } from "@/features/navigation/constants";
 import type { focusStartProps } from "@/features/focusmodus/types/focusmodus";
+import { symbool } from "@/lib/symbols";
 import { colors, radius, shadows, spacing } from "@/theme";
 
 const STAPPEN = [
@@ -112,7 +113,7 @@ export default function FocusStartScherm({
               hitSlop={10}
             >
               <SymbolView
-                name="xmark"
+                name={symbool("xmark")}
                 size={13}
                 tintColor={colors.textMuted}
                 weight="bold"

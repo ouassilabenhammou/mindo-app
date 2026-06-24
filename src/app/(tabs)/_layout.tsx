@@ -1,16 +1,18 @@
 import { Tabs, useSegments } from "expo-router";
 import { SymbolView } from "expo-symbols";
+import { useState } from "react";
 import { type ColorValue, StyleSheet, View } from "react-native";
 import type { SFSymbol } from "sf-symbols-typescript";
 
 import FloatingTabBar from "@/features/navigation/components/FloatingTabBar";
 import MindoButton from "@/features/navigation/components/MindoButton";
+import { symbool } from "@/lib/symbols";
 import { colors } from "@/theme";
 
 function TabIcon({ name, color }: { name: SFSymbol; color: ColorValue }) {
   return (
     <SymbolView
-      name={name}
+      name={symbool(name)}
       size={26}
       tintColor={color}
       weight="semibold"
@@ -26,12 +28,15 @@ export default function TabLayout() {
   const segments = useSegments();
   const actiefScherm = segments[segments.length - 1];
   const toonMindoKnop = actiefScherm !== "mindo";
+  const [donkereNav, setDonkereNav] = useState(false);
 
   return (
     <View style={styles.root}>
       <Tabs
         initialRouteName="taken"
-        tabBar={(props) => <FloatingTabBar {...props} />}
+        tabBar={(props) => (
+          <FloatingTabBar {...props} onDonkerChange={setDonkereNav} />
+        )}
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: colors.accent,
@@ -83,7 +88,7 @@ export default function TabLayout() {
         />
       </Tabs>
 
-      {toonMindoKnop && <MindoButton />}
+      {toonMindoKnop && <MindoButton donker={donkereNav} />}
     </View>
   );
 }

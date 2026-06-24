@@ -17,6 +17,7 @@ import TaakFormulier from "@/features/taken/components/TaakFormulier";
 import TodoLijst from "@/features/taken/components/TodoLijst";
 import { useTaken } from "@/features/taken/hooks/useTaken";
 import type { Taak } from "@/features/taken/types/taken";
+import { symbool } from "@/lib/symbols";
 import { colors, radius, shadows, spacing, typography } from "@/theme";
 
 export default function TakenScreen() {
@@ -102,7 +103,7 @@ export default function TakenScreen() {
           accessibilityRole="button"
         >
           <SymbolView
-            name="sparkles"
+            name={symbool("sparkles")}
             size={16}
             tintColor={colors.accent}
             weight="semibold"

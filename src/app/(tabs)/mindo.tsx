@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { braindumpNaarTaken } from "@/features/ai/services/mistral";
 import type { BraindumpTaak } from "@/features/ai/types/braindump";
+import { symbool } from "@/lib/symbols";
 import { colors, radius, shadows, spacing, typography } from "@/theme";
 
 function sluitBraindump() {
@@ -67,7 +68,7 @@ export default function Mindo() {
           hitSlop={8}
         >
           <SymbolView
-            name="chevron.left"
+            name={symbool("chevron.left")}
             size={18}
             tintColor={colors.text}
             weight="semibold"

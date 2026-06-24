@@ -6,9 +6,11 @@ import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { symbool } from "@/lib/symbols";
 import { colors, radius, spacing, typography } from "@/theme";
 
 const LIQUID_GLASS = isLiquidGlassAvailable();
+const INSTELLINGEN_KNOP = 44;
 
 export default function Voortgang() {
   const insets = useSafeAreaInsets();
@@ -52,11 +54,11 @@ export default function Voortgang() {
           </View>
         </View>
 
-        <View style={styles.naamSchaduw}>
+        <View style={styles.instellingenSchaduw}>
           <View style={styles.instellingenClip}>
             {LIQUID_GLASS ? (
               <GlassView
-                style={StyleSheet.absoluteFill}
+                style={[StyleSheet.absoluteFill, styles.instellingenGlas]}
                 glassEffectStyle="regular"
                 colorScheme="light"
               />
@@ -65,10 +67,16 @@ export default function Voortgang() {
                 <BlurView
                   intensity={Platform.OS === "android" ? 40 : 60}
                   tint="light"
-                  style={StyleSheet.absoluteFill}
+                  style={[StyleSheet.absoluteFill, styles.instellingenGlas]}
                 />
-                <View style={[StyleSheet.absoluteFill, styles.naamTint]} />
-                <View style={styles.naamBorder} />
+                <View
+                  style={[
+                    StyleSheet.absoluteFill,
+                    styles.naamTint,
+                    styles.instellingenGlas,
+                  ]}
+                />
+                <View style={styles.instellingenBorder} />
               </>
             )}
 
@@ -80,7 +88,7 @@ export default function Voortgang() {
               hitSlop={8}
             >
               <SymbolView
-                name="gearshape"
+                name={symbool("gearshape")}
                 size={22}
                 tintColor={colors.text}
                 weight="regular"
@@ -142,14 +150,36 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: colors.text,
   },
-  instellingenClip: {
-    borderRadius: radius.pill,
-    overflow: "hidden",
+  instellingenSchaduw: {
+    width: INSTELLINGEN_KNOP,
+    height: INSTELLINGEN_KNOP,
+    borderRadius: INSTELLINGEN_KNOP / 2,
     marginLeft: spacing.md,
+    shadowColor: "#1B1D2A",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 6,
+    flexShrink: 0,
+  },
+  instellingenClip: {
+    width: INSTELLINGEN_KNOP,
+    height: INSTELLINGEN_KNOP,
+    borderRadius: INSTELLINGEN_KNOP / 2,
+    overflow: "hidden",
+  },
+  instellingenGlas: {
+    borderRadius: INSTELLINGEN_KNOP / 2,
+  },
+  instellingenBorder: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: INSTELLINGEN_KNOP / 2,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(255, 255, 255, 0.7)",
   },
   instellingenKnop: {
-    width: 44,
-    height: 44,
+    width: INSTELLINGEN_KNOP,
+    height: INSTELLINGEN_KNOP,
     alignItems: "center",
     justifyContent: "center",
   },

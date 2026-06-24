@@ -1,22 +1,35 @@
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { colors, radius, spacing, typography } from "@/theme";
 import { router } from "expo-router";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Instellingen() {
   const { signOut } = useAuth();
   const insets = useSafeAreaInsets();
 
+  async function uitloggen() {
+    await signOut();
+    router.replace("/");
+  }
+
   function bevestigUitloggen() {
+    // React Native Web roept de knop-callbacks van Alert.alert niet aan,
+    // dus gebruiken we daar window.confirm. Op native blijft Alert werken.
+    if (Platform.OS === "web") {
+      if (window.confirm("Weet je zeker dat je wilt uitloggen?")) {
+        void uitloggen();
+      }
+      return;
+    }
+
     Alert.alert("Uitloggen", "Weet je zeker dat je wilt uitloggen?", [
       { text: "Annuleren", style: "cancel" },
       {
         text: "Uitloggen",
         style: "destructive",
-        onPress: async () => {
-          await signOut();
-          router.replace("/");
+        onPress: () => {
+          void uitloggen();
         },
       },
     ]);
