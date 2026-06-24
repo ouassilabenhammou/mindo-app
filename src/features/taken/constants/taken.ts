@@ -16,6 +16,21 @@ export const SECTIE_LABELS: Record<SectieId, string> = {
   voltooid: "Voltooid",
 };
 
+/**
+ * Per sectie een herkenbare kleur (sterk = accentlijn/badge, zacht = achtergrond),
+ * zodat Nu / Straks / Later / Voltooid in één oogopslag te onderscheiden zijn.
+ */
+export const SECTIE_KLEUREN: Record<
+  SectieId,
+  { sterk: string; zacht: string }
+> = {
+  nu: { sterk: "#E5484D", zacht: "#FCEBEC" },
+  straks: { sterk: "#E8920C", zacht: "#FCF1DD" },
+  later: { sterk: "#7A68D6", zacht: "#ECE7FB" },
+  taak: { sterk: "#6E6F80", zacht: "#F1F0F4" },
+  voltooid: { sterk: "#2C9E6E", zacht: "#E3F5EC" },
+};
+
 export const STANDAARD_OPEN_SECTIES: Record<SectieId, boolean> = {
   nu: true,
   straks: false,
@@ -39,9 +54,9 @@ export const PRIORITEIT_LABELS: Record<Prioriteit, string> = {
 export const PRIORITEITEN: Prioriteit[] = ["hoog", "gemiddeld", "laag"];
 
 export const CATEGORY_KLEUREN: Record<string, string> = {
-  nu: "#FF6B6B",
-  straks: "#F4B740",
-  later: "#9F8FE8",
+  nu: SECTIE_KLEUREN.nu.sterk,
+  straks: SECTIE_KLEUREN.straks.sterk,
+  later: SECTIE_KLEUREN.later.sterk,
 };
 
 const STANDAARD_DUUR = 5;

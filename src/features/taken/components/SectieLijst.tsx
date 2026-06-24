@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import SectieHeader from "@/features/taken/components/SectieHeader";
 import TodoItem from "@/features/taken/components/TodoItem";
-import { SECTIE_LABELS } from "@/features/taken/constants/taken";
+import { SECTIE_KLEUREN, SECTIE_LABELS } from "@/features/taken/constants/taken";
 import type { SectieId, Taak } from "@/features/taken/types/taken";
 import { colors, spacing } from "@/theme";
 
@@ -32,6 +32,8 @@ export default function SectieLijst({
         aantal={taken.length}
         isOpen={isOpen}
         onPress={onToggle}
+        kleurSterk={SECTIE_KLEUREN[sectieId].sterk}
+        kleurZacht={SECTIE_KLEUREN[sectieId].zacht}
       />
 
       {isOpen && (

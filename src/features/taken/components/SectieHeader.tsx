@@ -7,6 +7,8 @@ type SectieHeaderProps = {
   aantal: number;
   isOpen: boolean;
   onPress: () => void;
+  kleurSterk: string;
+  kleurZacht: string;
 };
 
 export default function SectieHeader({
@@ -14,12 +16,17 @@ export default function SectieHeader({
   aantal,
   isOpen,
   onPress,
+  kleurSterk,
+  kleurZacht,
 }: SectieHeaderProps) {
   return (
     <Pressable style={styles.header} onPress={onPress}>
       <View style={styles.linkerkant}>
-        <Text style={styles.titel}>{titel}</Text>
-        <View style={styles.badge}>
+        <View style={[styles.label, { backgroundColor: kleurZacht }]}>
+          <View style={[styles.stip, { backgroundColor: kleurSterk }]} />
+          <Text style={[styles.titel, { color: kleurSterk }]}>{titel}</Text>
+        </View>
+        <View style={[styles.badge, { backgroundColor: kleurSterk }]}>
           <Text style={styles.badgeTekst}>{aantal}</Text>
         </View>
       </View>
@@ -41,22 +48,35 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: spacing.sm,
   },
+  label: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 6,
+    borderRadius: radius.pill,
+  },
+  stip: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
   titel: {
     ...typography.sectionTitle,
+    fontSize: 15,
   },
   badge: {
     minWidth: 22,
     height: 22,
     paddingHorizontal: 7,
     borderRadius: radius.pill,
-    backgroundColor: colors.secondary,
     alignItems: "center",
     justifyContent: "center",
   },
   badgeTekst: {
     fontSize: 12,
     fontWeight: "700",
-    color: colors.textOnLavender,
+    color: colors.white,
   },
   chevron: {
     fontSize: 18,
