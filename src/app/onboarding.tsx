@@ -17,6 +17,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { markeerOnboardingVoltooid } from "@/features/onboarding/storage";
+import { symbool } from "@/lib/symbols";
 import { colors, radius, shadows, spacing, typography } from "@/theme";
 
 const logo = require("../../assets/images/mindo-logo.png");
@@ -51,7 +52,7 @@ const SLIDES: Slide[] = [
 function Icoon({ naam, kleur }: { naam: SFSymbol; kleur: string }) {
   return (
     <SymbolView
-      name={naam}
+      name={symbool(naam)}
       size={26}
       tintColor={kleur}
       weight="semibold"

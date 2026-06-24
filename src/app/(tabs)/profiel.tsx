@@ -6,6 +6,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { symbool } from "@/lib/symbols";
 import { colors, radius, spacing, typography } from "@/theme";
 
 const LIQUID_GLASS = isLiquidGlassAvailable();
@@ -80,7 +81,7 @@ export default function Voortgang() {
               hitSlop={8}
             >
               <SymbolView
-                name="gearshape"
+                name={symbool("gearshape")}
                 size={22}
                 tintColor={colors.text}
                 weight="regular"

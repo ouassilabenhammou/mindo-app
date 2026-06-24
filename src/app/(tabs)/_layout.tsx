@@ -5,12 +5,13 @@ import type { SFSymbol } from "sf-symbols-typescript";
 
 import FloatingTabBar from "@/features/navigation/components/FloatingTabBar";
 import MindoButton from "@/features/navigation/components/MindoButton";
+import { symbool } from "@/lib/symbols";
 import { colors } from "@/theme";
 
 function TabIcon({ name, color }: { name: SFSymbol; color: ColorValue }) {
   return (
     <SymbolView
-      name={name}
+      name={symbool(name)}
       size={26}
       tintColor={color}
       weight="semibold"
