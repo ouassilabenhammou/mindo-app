@@ -3,13 +3,13 @@ import { router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { colors } from "@/theme";
 import {
   MINDO_BUTTON_SIZE,
   TAB_BAR_HEIGHT,
   TAB_BAR_SIDE_MARGIN,
   tabBarBottomOffset,
 } from "@/features/navigation/constants";
+import { colors } from "@/theme";
 
 const logo = require("../../../../assets/images/mindo-logo.png");
 
@@ -21,7 +21,8 @@ export default function MindoButton() {
   const insets = useSafeAreaInsets();
   // Verticaal uitlijnen met het midden van de balk naast de knop.
   const bottom =
-    tabBarBottomOffset(insets.bottom) + (TAB_BAR_HEIGHT - MINDO_BUTTON_SIZE) / 2;
+    tabBarBottomOffset(insets.bottom) +
+    (TAB_BAR_HEIGHT - MINDO_BUTTON_SIZE) / 2;
 
   return (
     <View pointerEvents="box-none" style={[styles.host, { bottom }]}>
@@ -29,10 +30,7 @@ export default function MindoButton() {
         accessibilityRole="button"
         accessibilityLabel="Open Mindo Braindump"
         onPress={() => router.push("/mindo")}
-        style={({ pressed }) => [
-          styles.knop,
-          pressed && styles.knopPressed,
-        ]}
+        style={({ pressed }) => [styles.knop, pressed && styles.knopPressed]}
         hitSlop={8}
       >
         <View style={styles.ring}>
@@ -63,10 +61,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: colors.accent,
+    shadowColor: "#1B1D2A",
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.36,
-    shadowRadius: 16,
+    shadowOpacity: 0.14,
+    shadowRadius: 18,
     elevation: 10,
   },
   knopPressed: {
@@ -77,13 +75,11 @@ const styles = StyleSheet.create({
     height: KNOP - 6,
     borderRadius: (KNOP - 6) / 2,
     backgroundColor: colors.surface,
-    borderWidth: 1.5,
-    borderColor: colors.accentSoft,
     alignItems: "center",
     justifyContent: "center",
   },
   logo: {
-    width: 38,
-    height: 38,
+    width: 48,
+    height: 48,
   },
 });
