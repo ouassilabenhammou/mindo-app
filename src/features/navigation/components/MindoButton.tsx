@@ -9,9 +9,9 @@ import {
   TAB_BAR_SIDE_MARGIN,
   tabBarBottomOffset,
 } from "@/features/navigation/constants";
-import { colors } from "@/theme";
+import { colors, shadows } from "@/theme";
 
-const logo = require("../../../../assets/images/mindo-logo.png");
+const logo = require("../../../../assets/images/mindo-logo-licht.png");
 
 /**
  * Zwevende primaire actieknop met het Mindo-logo. Staat naast de zwevende
@@ -58,23 +58,19 @@ const styles = StyleSheet.create({
     width: KNOP,
     height: KNOP,
     borderRadius: KNOP / 2,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#1B1D2A",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.14,
-    shadowRadius: 18,
-    elevation: 10,
+    ...shadows.primary,
   },
   knopPressed: {
     transform: [{ scale: 0.94 }],
   },
   ring: {
-    width: KNOP - 6,
-    height: KNOP - 6,
-    borderRadius: (KNOP - 6) / 2,
-    backgroundColor: colors.surface,
+    width: KNOP,
+    height: KNOP,
+    borderRadius: KNOP / 2,
+    backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
   },
