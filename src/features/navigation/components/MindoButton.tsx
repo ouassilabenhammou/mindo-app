@@ -9,15 +9,20 @@ import {
   TAB_BAR_SIDE_MARGIN,
   tabBarBottomOffset,
 } from "@/features/navigation/constants";
-import { colors, shadows } from "@/theme";
+import { colors } from "@/theme";
 
 const logo = require("../../../../assets/images/mindo-logo-licht.png");
+
+type MindoButtonProps = {
+  /** Sterkere schaduw wanneer de tabbar in donkere modus staat (focusmodus). */
+  donker?: boolean;
+};
 
 /**
  * Zwevende primaire actieknop met het Mindo-logo. Staat naast de zwevende
  * navigatiebalk, op gelijke hoogte, en leidt rechtstreeks naar de Braindump.
  */
-export default function MindoButton() {
+export default function MindoButton({ donker = false }: MindoButtonProps) {
   const insets = useSafeAreaInsets();
   // Verticaal uitlijnen met het midden van de balk naast de knop.
   const bottom =
@@ -33,13 +38,15 @@ export default function MindoButton() {
         style={({ pressed }) => [styles.knop, pressed && styles.knopPressed]}
         hitSlop={8}
       >
-        <View style={styles.ring}>
-          <Image
-            source={logo}
-            style={styles.logo}
-            contentFit="contain"
-            transition={120}
-          />
+        <View style={[styles.shadow, donker && styles.shadowDonker]}>
+          <View style={styles.vlak}>
+            <Image
+              source={logo}
+              style={styles.logo}
+              contentFit="contain"
+              transition={120}
+            />
+          </View>
         </View>
       </Pressable>
     </View>
@@ -57,20 +64,28 @@ const styles = StyleSheet.create({
   knop: {
     width: KNOP,
     height: KNOP,
-    borderRadius: KNOP / 2,
-    backgroundColor: colors.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    ...shadows.primary,
   },
   knopPressed: {
     transform: [{ scale: 0.94 }],
   },
-  ring: {
+  shadow: {
     width: KNOP,
     height: KNOP,
     borderRadius: KNOP / 2,
-    backgroundColor: "transparent",
+    shadowColor: "#1B1D2A",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.16,
+    shadowRadius: 22,
+    elevation: 12,
+  },
+  shadowDonker: {
+    shadowOpacity: 0.4,
+  },
+  vlak: {
+    width: KNOP,
+    height: KNOP,
+    borderRadius: KNOP / 2,
+    backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
   },

@@ -1,6 +1,7 @@
 import type { BottomTabBarProps } from "expo-router/build/react-navigation/bottom-tabs";
 import { BlurView } from "expo-blur";
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect";
+import { useEffect } from "react";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -19,11 +20,16 @@ import {
 /** Routes die niet in de zwevende balk getoond worden (eigen toegang). */
 const VERBORGEN_ROUTES = new Set(["mindo"]);
 
+type FloatingTabBarProps = BottomTabBarProps & {
+  onDonkerChange?: (donker: boolean) => void;
+};
+
 export default function FloatingTabBar({
   state,
   descriptors,
   navigation,
-}: BottomTabBarProps) {
+  onDonkerChange,
+}: FloatingTabBarProps) {
   const insets = useSafeAreaInsets();
 
   const focusedRoute = state.routes[state.index];
@@ -40,6 +46,10 @@ export default function FloatingTabBar({
     | { backgroundColor?: string }
     | undefined;
   const donker = focusStyle?.backgroundColor === colors.darkBackground;
+
+  useEffect(() => {
+    onDonkerChange?.(donker);
+  }, [donker, onDonkerChange]);
 
   const zichtbareRoutes = state.routes.filter(
     (route) => !VERBORGEN_ROUTES.has(route.name),
